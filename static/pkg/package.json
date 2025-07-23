@@ -1,0 +1,15 @@
+{
+  "name": "neuroquery_rs",
+  "type": "module",
+  "version": "0.1.0",
+  "files": [
+    "neuroquery_bg.wasm",
+    "neuroquery.js",
+    "neuroquery.d.ts"
+  ],
+  "main": "neuroquery.js",
+  "types": "neuroquery.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}

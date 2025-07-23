@@ -1,0 +1,1960 @@
+{
+    "views": [
+        {
+            "data": [
+                "__e506186d71676e98"
+            ],
+            "state": null,
+            "attrs": {
+                "priority": 1
+            },
+            "desc": "",
+            "cmap": [
+                "RdBu_r"
+            ],
+            "vmin": [
+                0.009942443989932506
+            ],
+            "vmax": [
+                0.9896497896283171
+            ],
+            "name": "neurovlm"
+        },
+        {
+            "data": [
+                "__4a32a7f23c9a196d"
+            ],
+            "state": null,
+            "attrs": {
+                "priority": 1
+            },
+            "desc": "",
+            "cmap": [
+                "RdBu_r"
+            ],
+            "vmin": [
+                -2.051055431365967
+            ],
+            "vmax": [
+                2.5047552585601807
+            ],
+            "name": "PC1 of genes in the Allen Human Brain Atlas"
+        },
+        {
+            "data": [
+                "__7cd9a729ca6f6336"
+            ],
+            "state": null,
+            "attrs": {
+                "priority": 1
+            },
+            "desc": "",
+            "cmap": [
+                "RdBu_r"
+            ],
+            "vmin": [
+                0.0
+            ],
+            "vmax": [
+                26.924793243408203
+            ],
+            "name": "PET tracer binding (Bmax) to 5-HT1b (serotonin receptor)"
+        },
+        {
+            "data": [
+                "__c783b6c390e7b931"
+            ],
+            "state": null,
+            "attrs": {
+                "priority": 1
+            },
+            "desc": "",
+            "cmap": [
+                "RdBu_r"
+            ],
+            "vmin": [
+                0.0
+            ],
+            "vmax": [
+                63.710670471191406
+            ],
+            "name": "PET tracer binding (Bmax) to 5-HT2a (serotonin receptor)"
+        },
+        {
+            "data": [
+                "__b8aebb5aecedcfd2"
+            ],
+            "state": null,
+            "attrs": {
+                "priority": 1
+            },
+            "desc": "",
+            "cmap": [
+                "RdBu_r"
+            ],
+            "vmin": [
+                0.0
+            ],
+            "vmax": [
+                54.24959945678711
+            ],
+            "name": "PET tracer binding (Bmax) to 5-HT1a (serotonin receptor)"
+        },
+        {
+            "data": [
+                "__4782004559b51abb"
+            ],
+            "state": null,
+            "attrs": {
+                "priority": 1
+            },
+            "desc": "",
+            "cmap": [
+                "RdBu_r"
+            ],
+            "vmin": [
+                0.0
+            ],
+            "vmax": [
+                9.848797798156738
+            ],
+            "name": "PET tracer binding (Bmax) to 5-HTT (serotonin transporter)"
+        },
+        {
+            "data": [
+                "__310f64b0808bfe9a"
+            ],
+            "state": null,
+            "attrs": {
+                "priority": 1
+            },
+            "desc": "",
+            "cmap": [
+                "RdBu_r"
+            ],
+            "vmin": [
+                0.0
+            ],
+            "vmax": [
+                2.728341817855835
+            ],
+            "name": "PET tracer binding (Bmax) to 5-HT4 (serotonin receptor)"
+        },
+        {
+            "data": [
+                "__d28ad744cf64e87a"
+            ],
+            "state": null,
+            "attrs": {
+                "priority": 1
+            },
+            "desc": "",
+            "cmap": [
+                "RdBu_r"
+            ],
+            "vmin": [
+                0.0
+            ],
+            "vmax": [
+                1046.30224609375
+            ],
+            "name": "PET and autoradiography informed GABAa benzodiazepine binding-site density (Bmax; gaba receptor)"
+        },
+        {
+            "data": [
+                "__f76001bbc0001dce"
+            ],
+            "state": null,
+            "attrs": {
+                "priority": 1
+            },
+            "desc": "",
+            "cmap": [
+                "RdBu_r"
+            ],
+            "vmin": [
+                1.034765362739563
+            ],
+            "vmax": [
+                2.2707772254943848
+            ],
+            "name": "PET tracer binding (SUVR) to VAChT (acetylcholine transporter)"
+        },
+        {
+            "data": [
+                "__6639ea61f9f828d7"
+            ],
+            "state": null,
+            "attrs": {
+                "priority": 1
+            },
+            "desc": "",
+            "cmap": [
+                "RdBu_r"
+            ],
+            "vmin": [
+                0.06946675479412079
+            ],
+            "vmax": [
+                2.23524808883667
+            ],
+            "name": "PET tracer binding (BPnd) to D2 (dopamine receptor)"
+        },
+        {
+            "data": [
+                "__93aec8d405207f5d"
+            ],
+            "state": null,
+            "attrs": {
+                "priority": 1
+            },
+            "desc": "",
+            "cmap": [
+                "RdBu_r"
+            ],
+            "vmin": [
+                0.0
+            ],
+            "vmax": [
+                7721.34375
+            ],
+            "name": "Glucose metabolism"
+        },
+        {
+            "data": [
+                "__54e102bf7c05d2ca"
+            ],
+            "state": null,
+            "attrs": {
+                "priority": 1
+            },
+            "desc": "",
+            "cmap": [
+                "RdBu_r"
+            ],
+            "vmin": [
+                0.16428181529045105
+            ],
+            "vmax": [
+                25.301170349121094
+            ],
+            "name": "PET tracer binding (BPnd) to NET (norepinephrine transporter)"
+        },
+        {
+            "data": [
+                "__44b965e7928e5a3f"
+            ],
+            "state": null,
+            "attrs": {
+                "priority": 1
+            },
+            "desc": "",
+            "cmap": [
+                "RdBu_r"
+            ],
+            "vmin": [
+                0.11781910806894302
+            ],
+            "vmax": [
+                1.2879090309143066
+            ],
+            "name": "PET tracer binding (BPnd) to mGluR5 (glutamate receptor)"
+        },
+        {
+            "data": [
+                "__8c9854c652167c15"
+            ],
+            "state": null,
+            "attrs": {
+                "priority": 1
+            },
+            "desc": "",
+            "cmap": [
+                "RdBu_r"
+            ],
+            "vmin": [
+                22.90066146850586
+            ],
+            "vmax": [
+                87.83927154541016
+            ],
+            "name": "PET tracer binding (BPnd) to GABAa (gaba receptor)"
+        },
+        {
+            "data": [
+                "__a5f54393d928e053"
+            ],
+            "state": null,
+            "attrs": {
+                "priority": 1
+            },
+            "desc": "",
+            "cmap": [
+                "RdBu_r"
+            ],
+            "vmin": [
+                19.13785743713379
+            ],
+            "vmax": [
+                47.04275131225586
+            ],
+            "name": "SPECT tracer binding (SUVR) to DAT (dopamine transporter)"
+        },
+        {
+            "data": [
+                "__e47a83a7955f3aee"
+            ],
+            "state": null,
+            "attrs": {
+                "priority": 1
+            },
+            "desc": "",
+            "cmap": [
+                "RdBu_r"
+            ],
+            "vmin": [
+                0.0
+            ],
+            "vmax": [
+                22.69281578063965
+            ],
+            "name": "PET tracer binding (BPnd) to 5-HTT (serotonin transporter)"
+        },
+        {
+            "data": [
+                "__b48fc355b54c3e6c"
+            ],
+            "state": null,
+            "attrs": {
+                "priority": 1
+            },
+            "desc": "",
+            "cmap": [
+                "RdBu_r"
+            ],
+            "vmin": [
+                0.8256179690361023
+            ],
+            "vmax": [
+                5.2636260986328125
+            ],
+            "name": "PET tracer binding (BPnd) to SV2A (synaptic vesicle glycoprotein 2A, a synapse marker)"
+        },
+        {
+            "data": [
+                "__fafc258a3895b88d"
+            ],
+            "state": null,
+            "attrs": {
+                "priority": 1
+            },
+            "desc": "",
+            "cmap": [
+                "RdBu_r"
+            ],
+            "vmin": [
+                1.553022861480713
+            ],
+            "vmax": [
+                69.48890686035156
+            ],
+            "name": "PET tracer binding (BPnd) to 5-HT1b (serotonin receptor)"
+        },
+        {
+            "data": [
+                "__fa89d9f07182ecac"
+            ],
+            "state": null,
+            "attrs": {
+                "priority": 1
+            },
+            "desc": "",
+            "cmap": [
+                "RdBu_r"
+            ],
+            "vmin": [
+                9.982121467590332
+            ],
+            "vmax": [
+                29.256383895874023
+            ],
+            "name": "PET tracer binding (Vt) to H3 (histamine receptor)"
+        },
+        {
+            "data": [
+                "__cd0bca582091fae3"
+            ],
+            "state": null,
+            "attrs": {
+                "priority": 1
+            },
+            "desc": "",
+            "cmap": [
+                "RdBu_r"
+            ],
+            "vmin": [
+                3.078038454055786
+            ],
+            "vmax": [
+                9.341942329406649
+            ],
+            "name": "PET tracer binding (Vt) to NMDA (glutamate receptor)"
+        },
+        {
+            "data": [
+                "__175c75012d88475f"
+            ],
+            "state": null,
+            "attrs": {
+                "priority": 1
+            },
+            "desc": "",
+            "cmap": [
+                "RdBu_r"
+            ],
+            "vmin": [
+                6.980257511138916
+            ],
+            "vmax": [
+                13.688102722167969
+            ],
+            "name": "PET tracer binding (Vt) to a4b2 (acetylcholine receptor)"
+        },
+        {
+            "data": [
+                "__d4608d7c5996c968"
+            ],
+            "state": null,
+            "attrs": {
+                "priority": 1
+            },
+            "desc": "",
+            "cmap": [
+                "RdBu_r"
+            ],
+            "vmin": [
+                2.111999988555908
+            ],
+            "vmax": [
+                25.661930084228516
+            ],
+            "name": "PET tracer binding (BPnd) to D1 (dopamine receptor)"
+        },
+        {
+            "data": [
+                "__1757936eba02133e"
+            ],
+            "state": null,
+            "attrs": {
+                "priority": 1
+            },
+            "desc": "",
+            "cmap": [
+                "RdBu_r"
+            ],
+            "vmin": [
+                0.1882224678993225
+            ],
+            "vmax": [
+                1.7812753915786743
+            ],
+            "name": "PET tracer binding (BPnd) to MOR (mu-opioid receptor)"
+        },
+        {
+            "data": [
+                "__c262a1f0ade2d217"
+            ],
+            "state": null,
+            "attrs": {
+                "priority": 1
+            },
+            "desc": "",
+            "cmap": [
+                "RdBu_r"
+            ],
+            "vmin": [
+                1.8295068740844727
+            ],
+            "vmax": [
+                3.5939528942108154
+            ],
+            "name": "PET tracer binding (Vt) to COX-1 (cyclooxygenase-1)"
+        },
+        {
+            "data": [
+                "__2987be75f41bfafb"
+            ],
+            "state": null,
+            "attrs": {
+                "priority": 1
+            },
+            "desc": "",
+            "cmap": [
+                "RdBu_r"
+            ],
+            "vmin": [
+                0.9720072746276855
+            ],
+            "vmax": [
+                1.5879873037338257
+            ],
+            "name": "PET tracer binding (Vt) to CB1 (cannabinoid receptor)"
+        },
+        {
+            "data": [
+                "__961e8c41a11e0dfc"
+            ],
+            "state": null,
+            "attrs": {
+                "priority": 1
+            },
+            "desc": "",
+            "cmap": [
+                "RdBu_r"
+            ],
+            "vmin": [
+                0.7955659031867981
+            ],
+            "vmax": [
+                1.1915289163589478
+            ],
+            "name": "PET tracer binding (SUVR) to TSPO (translocator protein)"
+        },
+        {
+            "data": [
+                "__70cbcb0228ed3fd1"
+            ],
+            "state": null,
+            "attrs": {
+                "priority": 1
+            },
+            "desc": "",
+            "cmap": [
+                "RdBu_r"
+            ],
+            "vmin": [
+                0.13728798925876617
+            ],
+            "vmax": [
+                6.688616752624512
+            ],
+            "name": "PET tracer binding (BPnd) to GABAa receptor, alpha5 subunit"
+        },
+        {
+            "data": [
+                "__1969d94a7b855937"
+            ],
+            "state": null,
+            "attrs": {
+                "priority": 1
+            },
+            "desc": "",
+            "cmap": [
+                "RdBu_r"
+            ],
+            "vmin": [
+                0.7633609771728516
+            ],
+            "vmax": [
+                5.284667491912842
+            ],
+            "name": "PET tracer binding (BPnd) to M1 (acetylcholine receptor)"
+        },
+        {
+            "data": [
+                "__cfc08e125880f374"
+            ],
+            "state": null,
+            "attrs": {
+                "priority": 1
+            },
+            "desc": "",
+            "cmap": [
+                "RdBu_r"
+            ],
+            "vmin": [
+                -0.004140760749578476
+            ],
+            "vmax": [
+                0.005987141281366348
+            ],
+            "name": "PC1 of Neurosynth terms in the Cognitive Atlas (123 terms total)"
+        },
+        {
+            "data": [
+                "__b1ab230d3206b105"
+            ],
+            "state": null,
+            "attrs": {
+                "priority": 1
+            },
+            "desc": "",
+            "cmap": [
+                "RdBu_r"
+            ],
+            "vmin": [
+                -0.0677599310874939
+            ],
+            "vmax": [
+                0.6890617609024048
+            ],
+            "name": "PET tracer binding (BPnd) to 5-HT6 (serotonin receptor)"
+        },
+        {
+            "data": [
+                "__7e07abb04fca89ae"
+            ],
+            "state": null,
+            "attrs": {
+                "priority": 1
+            },
+            "desc": "",
+            "cmap": [
+                "RdBu_r"
+            ],
+            "vmin": [
+                -0.14484557509422302
+            ],
+            "vmax": [
+                0.8677306175231934
+            ],
+            "name": "PET tracer binding (BPnd) to DAT (dopamine transporter)"
+        },
+        {
+            "data": [
+                "__86df4ae89426101f"
+            ],
+            "state": null,
+            "attrs": {
+                "priority": 1
+            },
+            "desc": "",
+            "cmap": [
+                "RdBu_r"
+            ],
+            "vmin": [
+                0.0
+            ],
+            "vmax": [
+                7138.197265625
+            ],
+            "name": "Cerebral blood flow"
+        },
+        {
+            "data": [
+                "__e3f778d276129032"
+            ],
+            "state": null,
+            "attrs": {
+                "priority": 1
+            },
+            "desc": "",
+            "cmap": [
+                "RdBu_r"
+            ],
+            "vmin": [
+                0.0
+            ],
+            "vmax": [
+                88.2015609741211
+            ],
+            "name": "PET tracer binding (BPnd) to 5-HT2a (serotonin receptor)"
+        },
+        {
+            "data": [
+                "__b6d4945c3b1e24ba"
+            ],
+            "state": null,
+            "attrs": {
+                "priority": 1
+            },
+            "desc": "",
+            "cmap": [
+                "RdBu_r"
+            ],
+            "vmin": [
+                5.282753944396973
+            ],
+            "vmax": [
+                61.57356262207031
+            ],
+            "name": "PET tracer binding (BPnd) to 5-HT1a (serotonin receptor)"
+        },
+        {
+            "data": [
+                "__595c6fc7173e96f3"
+            ],
+            "state": null,
+            "attrs": {
+                "priority": 1
+            },
+            "desc": "",
+            "cmap": [
+                "RdBu_r"
+            ],
+            "vmin": [
+                1.9552420377731323
+            ],
+            "vmax": [
+                4.0283708572387695
+            ],
+            "name": "PET tracer binding (Vt) to KOR (kappa-opioid receptor)"
+        },
+        {
+            "data": [
+                "__73d30dabbc74b075"
+            ],
+            "state": null,
+            "attrs": {
+                "priority": 1
+            },
+            "desc": "",
+            "cmap": [
+                "RdBu_r"
+            ],
+            "vmin": [
+                2.1358869075775146
+            ],
+            "vmax": [
+                4.381785869598389
+            ],
+            "name": "PET tracer binding (SUVR) to class 1 HDAC isoforms 1, 2, and 3 (histone deacetylase)"
+        },
+        {
+            "data": [
+                "__5365fa243add3d1b"
+            ],
+            "state": null,
+            "attrs": {
+                "priority": 1
+            },
+            "desc": "",
+            "cmap": [
+                "RdBu_r"
+            ],
+            "vmin": [
+                0.0
+            ],
+            "vmax": [
+                0.43447253108024597
+            ],
+            "name": "MEG alpha (8-12 Hz) power distribution from the Human Connectome Project S1200 release"
+        },
+        {
+            "data": [
+                "__46ff2781e796f6d1"
+            ],
+            "state": null,
+            "attrs": {
+                "priority": 1
+            },
+            "desc": "",
+            "cmap": [
+                "RdBu_r"
+            ],
+            "vmin": [
+                0.0
+            ],
+            "vmax": [
+                0.13326537609100342
+            ],
+            "name": "MEG beta (15-29 Hz) power distribution from the Human Connectome Project S1200 release"
+        },
+        {
+            "data": [
+                "__8169f21d433bc14a"
+            ],
+            "state": null,
+            "attrs": {
+                "priority": 1
+            },
+            "desc": "",
+            "cmap": [
+                "RdBu_r"
+            ],
+            "vmin": [
+                0.0
+            ],
+            "vmax": [
+                0.397463321685791
+            ],
+            "name": "MEG delta (2-4 Hz) power distribution from the Human Connectome Project S1200 release"
+        },
+        {
+            "data": [
+                "__94cb4e9343a8d052"
+            ],
+            "state": null,
+            "attrs": {
+                "priority": 1
+            },
+            "desc": "",
+            "cmap": [
+                "RdBu_r"
+            ],
+            "vmin": [
+                0.0
+            ],
+            "vmax": [
+                0.035164982080459595
+            ],
+            "name": "MEG low gamma (30-59 Hz) power distribution from the Human Connectome Project S1200 release"
+        },
+        {
+            "data": [
+                "__90795dc76bfa8377"
+            ],
+            "state": null,
+            "attrs": {
+                "priority": 1
+            },
+            "desc": "",
+            "cmap": [
+                "RdBu_r"
+            ],
+            "vmin": [
+                0.0
+            ],
+            "vmax": [
+                0.023225294426083565
+            ],
+            "name": "MEG high gamma (60-90 Hz) power distribution from the Human Connectome Project S1200 release"
+        },
+        {
+            "data": [
+                "__547975ea8b043ca6"
+            ],
+            "state": null,
+            "attrs": {
+                "priority": 1
+            },
+            "desc": "",
+            "cmap": [
+                "RdBu_r"
+            ],
+            "vmin": [
+                0.0
+            ],
+            "vmax": [
+                0.3173843324184418
+            ],
+            "name": "MEG theta (5-7 Hz) power distribution from the Human Connectome Project S1200 release"
+        },
+        {
+            "data": [
+                "__7808fcf5cb6720f0"
+            ],
+            "state": null,
+            "attrs": {
+                "priority": 1
+            },
+            "desc": "",
+            "cmap": [
+                "RdBu_r"
+            ],
+            "vmin": [
+                0.0
+            ],
+            "vmax": [
+                41.57891082763672
+            ],
+            "name": "MEG intrinsic timescale from the Human Connectome Project S1200 release"
+        },
+        {
+            "data": [
+                "__c6d87604aa70866f"
+            ],
+            "state": null,
+            "attrs": {
+                "priority": 1
+            },
+            "desc": "",
+            "cmap": [
+                "RdBu_r"
+            ],
+            "vmin": [
+                0.0
+            ],
+            "vmax": [
+                1.7293542623519897
+            ],
+            "name": "MRI T1w/T2w ratio from the Human Connectome Project S1200 release"
+        },
+        {
+            "data": [
+                "__8ec39f31360bbd53"
+            ],
+            "state": null,
+            "attrs": {
+                "priority": 1
+            },
+            "desc": "",
+            "cmap": [
+                "RdBu_r"
+            ],
+            "vmin": [
+                0.0
+            ],
+            "vmax": [
+                3.5290603637695312
+            ],
+            "name": "MRI cortical thickness from the Human Connectome Project S1200 release"
+        },
+        {
+            "data": [
+                "__6b9da97173e2479b"
+            ],
+            "state": null,
+            "attrs": {
+                "priority": 1
+            },
+            "desc": "",
+            "cmap": [
+                "RdBu_r"
+            ],
+            "vmin": [
+                -5.371338367462158
+            ],
+            "vmax": [
+                6.645583152770996
+            ],
+            "name": "Diffusion map embedding gradient 1 of group-averaged functional connectivity"
+        },
+        {
+            "data": [
+                "__1916b81b82f72a9b"
+            ],
+            "state": null,
+            "attrs": {
+                "priority": 1
+            },
+            "desc": "",
+            "cmap": [
+                "RdBu_r"
+            ],
+            "vmin": [
+                -2.902198076248169
+            ],
+            "vmax": [
+                5.349149703979492
+            ],
+            "name": "Diffusion map embedding gradient 2 of group-averaged functional connectivity"
+        },
+        {
+            "data": [
+                "__1d9638ce3ac6d2a5"
+            ],
+            "state": null,
+            "attrs": {
+                "priority": 1
+            },
+            "desc": "",
+            "cmap": [
+                "RdBu_r"
+            ],
+            "vmin": [
+                -2.7289421558380127
+            ],
+            "vmax": [
+                2.5781566929817177
+            ],
+            "name": "Diffusion map embedding gradient 3 of group-averaged functional connectivity"
+        },
+        {
+            "data": [
+                "__8ae7eb7102e12611"
+            ],
+            "state": null,
+            "attrs": {
+                "priority": 1
+            },
+            "desc": "",
+            "cmap": [
+                "RdBu_r"
+            ],
+            "vmin": [
+                -2.288334369659424
+            ],
+            "vmax": [
+                0.9942123293876648
+            ],
+            "name": "Diffusion map embedding gradient 4 of group-averaged functional connectivity"
+        },
+        {
+            "data": [
+                "__681842543c9c5571"
+            ],
+            "state": null,
+            "attrs": {
+                "priority": 1
+            },
+            "desc": "",
+            "cmap": [
+                "RdBu_r"
+            ],
+            "vmin": [
+                -1.2449592351913452
+            ],
+            "vmax": [
+                1.5972729158401378
+            ],
+            "name": "Diffusion map embedding gradient 5 of group-averaged functional connectivity"
+        },
+        {
+            "data": [
+                "__6cc1b2dac79fa421"
+            ],
+            "state": null,
+            "attrs": {
+                "priority": 1
+            },
+            "desc": "",
+            "cmap": [
+                "RdBu_r"
+            ],
+            "vmin": [
+                -1.6532858610153198
+            ],
+            "vmax": [
+                0.9127907752990723
+            ],
+            "name": "Diffusion map embedding gradient 6 of group-averaged functional connectivity"
+        },
+        {
+            "data": [
+                "__382f7f35786017d6"
+            ],
+            "state": null,
+            "attrs": {
+                "priority": 1
+            },
+            "desc": "",
+            "cmap": [
+                "RdBu_r"
+            ],
+            "vmin": [
+                -0.911971390247345
+            ],
+            "vmax": [
+                1.0207045078277588
+            ],
+            "name": "Diffusion map embedding gradient 7 of group-averaged functional connectivity"
+        },
+        {
+            "data": [
+                "__1f438d2dd69df272"
+            ],
+            "state": null,
+            "attrs": {
+                "priority": 1
+            },
+            "desc": "",
+            "cmap": [
+                "RdBu_r"
+            ],
+            "vmin": [
+                -0.3294159173965454
+            ],
+            "vmax": [
+                0.4003814458847046
+            ],
+            "name": "Diffusion map embedding gradient 8 of group-averaged functional connectivity"
+        },
+        {
+            "data": [
+                "__2c2a03a4d13adc08"
+            ],
+            "state": null,
+            "attrs": {
+                "priority": 1
+            },
+            "desc": "",
+            "cmap": [
+                "RdBu_r"
+            ],
+            "vmin": [
+                -0.4675582945346832
+            ],
+            "vmax": [
+                0.4071442484855652
+            ],
+            "name": "Diffusion map embedding gradient 9 of group-averaged functional connectivity"
+        },
+        {
+            "data": [
+                "__462c9a59bc5fd017"
+            ],
+            "state": null,
+            "attrs": {
+                "priority": 1
+            },
+            "desc": "",
+            "cmap": [
+                "RdBu_r"
+            ],
+            "vmin": [
+                -0.6095037460327148
+            ],
+            "vmax": [
+                0.5726577639579773
+            ],
+            "name": "Diffusion map embedding gradient 10 of group-averaged functional connectivity"
+        },
+        {
+            "data": [
+                "__4e1a6f265ee95e56"
+            ],
+            "state": null,
+            "attrs": {
+                "priority": 1
+            },
+            "desc": "",
+            "cmap": [
+                "RdBu_r"
+            ],
+            "vmin": [
+                0.0
+            ],
+            "vmax": [
+                0.6998142009973509
+            ],
+            "name": "Intersubject variability of resting-state functional connectivity."
+        },
+        {
+            "data": [
+                "__ca07adc801a42c1f"
+            ],
+            "state": null,
+            "attrs": {
+                "priority": 1
+            },
+            "desc": "",
+            "cmap": [
+                "RdBu_r"
+            ],
+            "vmin": [
+                0.0
+            ],
+            "vmax": [
+                11436.3974609375
+            ],
+            "name": "Cerebral blood volume"
+        },
+        {
+            "data": [
+                "__3b8cc5421904d733"
+            ],
+            "state": null,
+            "attrs": {
+                "priority": 1
+            },
+            "desc": "",
+            "cmap": [
+                "RdBu_r"
+            ],
+            "vmin": [
+                0.0
+            ],
+            "vmax": [
+                6429.1455078125
+            ],
+            "name": "Oxygen metabolism"
+        },
+        {
+            "data": [
+                "__97fbf3c2b42dd17f"
+            ],
+            "state": null,
+            "attrs": {
+                "priority": 1
+            },
+            "desc": "",
+            "cmap": [
+                "RdBu_r"
+            ],
+            "vmin": [
+                -1.6869689226150513
+            ],
+            "vmax": [
+                1.684450626373291
+            ],
+            "name": "Sensory-association mean rank axis"
+        },
+        {
+            "data": [
+                "__e406beb0363c00c5"
+            ],
+            "state": null,
+            "attrs": {
+                "priority": 1
+            },
+            "desc": "",
+            "cmap": [
+                "RdBu_r"
+            ],
+            "vmin": [
+                0.0
+            ],
+            "vmax": [
+                4.298311710357666
+            ],
+            "name": "Cross-species functional homology"
+        },
+        {
+            "data": [
+                "__b9bcce6e8d1fb196"
+            ],
+            "state": null,
+            "attrs": {
+                "priority": 1
+            },
+            "desc": "",
+            "cmap": [
+                "RdBu_r"
+            ],
+            "vmin": [
+                0.0
+            ],
+            "vmax": [
+                66.487060546875
+            ],
+            "name": "Evolutionary cortical expansion"
+        }
+    ],
+    "data": {
+        "__e506186d71676e98": {
+            "split": 163842,
+            "frames": 1,
+            "name": "__e506186d71676e98",
+            "subject": "fsaverage",
+            "min": 1.0484371415486748e-07,
+            "max": 0.9999994752468082,
+            "raw": false
+        },
+        "__90795dc76bfa8377": {
+            "split": 163842,
+            "frames": 1,
+            "name": "__90795dc76bfa8377",
+            "subject": "fsaverage",
+            "min": 0.0,
+            "max": 0.026065358892083168,
+            "raw": false
+        },
+        "__b6d4945c3b1e24ba": {
+            "split": 163842,
+            "frames": 1,
+            "name": "__b6d4945c3b1e24ba",
+            "subject": "fsaverage",
+            "min": 2.6348493099212646,
+            "max": 79.49200439453125,
+            "raw": false
+        },
+        "__2987be75f41bfafb": {
+            "split": 163842,
+            "frames": 1,
+            "name": "__2987be75f41bfafb",
+            "subject": "fsaverage",
+            "min": 0.7673032879829407,
+            "max": 1.65751314163208,
+            "raw": false
+        },
+        "__54e102bf7c05d2ca": {
+            "split": 163842,
+            "frames": 1,
+            "name": "__54e102bf7c05d2ca",
+            "subject": "fsaverage",
+            "min": -0.0030000002589076757,
+            "max": 56.6726188659668,
+            "raw": false
+        },
+        "__595c6fc7173e96f3": {
+            "split": 163842,
+            "frames": 1,
+            "name": "__595c6fc7173e96f3",
+            "subject": "fsaverage",
+            "min": 1.0975043773651123,
+            "max": 4.546601295471191,
+            "raw": false
+        },
+        "__6639ea61f9f828d7": {
+            "split": 163842,
+            "frames": 1,
+            "name": "__6639ea61f9f828d7",
+            "subject": "fsaverage",
+            "min": -0.2799258530139923,
+            "max": 6.593434810638428,
+            "raw": false
+        },
+        "__1969d94a7b855937": {
+            "split": 163842,
+            "frames": 1,
+            "name": "__1969d94a7b855937",
+            "subject": "fsaverage",
+            "min": 0.2553204298019409,
+            "max": 6.090930461883545,
+            "raw": false
+        },
+        "__fafc258a3895b88d": {
+            "split": 163842,
+            "frames": 1,
+            "name": "__fafc258a3895b88d",
+            "subject": "fsaverage",
+            "min": 0.0,
+            "max": 96.1126480102539,
+            "raw": false
+        },
+        "__ca07adc801a42c1f": {
+            "split": 163842,
+            "frames": 1,
+            "name": "__ca07adc801a42c1f",
+            "subject": "fsaverage",
+            "min": 0.0,
+            "max": 25505.08203125,
+            "raw": false
+        },
+        "__cd0bca582091fae3": {
+            "split": 163842,
+            "frames": 1,
+            "name": "__cd0bca582091fae3",
+            "subject": "fsaverage",
+            "min": 2.6211180686950684,
+            "max": 10.32924747467041,
+            "raw": false
+        },
+        "__175c75012d88475f": {
+            "split": 163842,
+            "frames": 1,
+            "name": "__175c75012d88475f",
+            "subject": "fsaverage",
+            "min": 4.779738903045654,
+            "max": 20.144180297851562,
+            "raw": false
+        },
+        "__93aec8d405207f5d": {
+            "split": 163842,
+            "frames": 1,
+            "name": "__93aec8d405207f5d",
+            "subject": "fsaverage",
+            "min": 0.0,
+            "max": 8504.625,
+            "raw": false
+        },
+        "__b1ab230d3206b105": {
+            "split": 163842,
+            "frames": 1,
+            "name": "__b1ab230d3206b105",
+            "subject": "fsaverage",
+            "min": -0.33956378698349,
+            "max": 0.9200900793075562,
+            "raw": false
+        },
+        "__5365fa243add3d1b": {
+            "split": 163842,
+            "frames": 1,
+            "name": "__5365fa243add3d1b",
+            "subject": "fsaverage",
+            "min": 0.0,
+            "max": 0.4505821168422699,
+            "raw": false
+        },
+        "__6cc1b2dac79fa421": {
+            "split": 163842,
+            "frames": 1,
+            "name": "__6cc1b2dac79fa421",
+            "subject": "fsaverage",
+            "min": -1.8932726383209229,
+            "max": 1.0682134628295898,
+            "raw": false
+        },
+        "__97fbf3c2b42dd17f": {
+            "split": 163842,
+            "frames": 1,
+            "name": "__97fbf3c2b42dd17f",
+            "subject": "fsaverage",
+            "min": -1.7310501337051392,
+            "max": 1.7312778234481812,
+            "raw": false
+        },
+        "__382f7f35786017d6": {
+            "split": 163842,
+            "frames": 1,
+            "name": "__382f7f35786017d6",
+            "subject": "fsaverage",
+            "min": -1.107627034187317,
+            "max": 1.1879246234893799,
+            "raw": false
+        },
+        "__f76001bbc0001dce": {
+            "split": 163842,
+            "frames": 1,
+            "name": "__f76001bbc0001dce",
+            "subject": "fsaverage",
+            "min": 0.7192860841751099,
+            "max": 3.614750623703003,
+            "raw": false
+        },
+        "__e47a83a7955f3aee": {
+            "split": 163842,
+            "frames": 1,
+            "name": "__e47a83a7955f3aee",
+            "subject": "fsaverage",
+            "min": 0.0,
+            "max": 62.24126052856445,
+            "raw": false
+        },
+        "__b48fc355b54c3e6c": {
+            "split": 163842,
+            "frames": 1,
+            "name": "__b48fc355b54c3e6c",
+            "subject": "fsaverage",
+            "min": -0.12510204315185547,
+            "max": 5.801705360412598,
+            "raw": false
+        },
+        "__cfc08e125880f374": {
+            "split": 163842,
+            "frames": 1,
+            "name": "__cfc08e125880f374",
+            "subject": "fsaverage",
+            "min": -0.006148612126708031,
+            "max": 0.009584064595401287,
+            "raw": false
+        },
+        "__d4608d7c5996c968": {
+            "split": 163842,
+            "frames": 1,
+            "name": "__d4608d7c5996c968",
+            "subject": "fsaverage",
+            "min": -0.0030000002589076757,
+            "max": 34.380558013916016,
+            "raw": false
+        },
+        "__b9bcce6e8d1fb196": {
+            "split": 163842,
+            "frames": 1,
+            "name": "__b9bcce6e8d1fb196",
+            "subject": "fsaverage",
+            "min": 0.0,
+            "max": 130.61636352539062,
+            "raw": false
+        },
+        "__1916b81b82f72a9b": {
+            "split": 163842,
+            "frames": 1,
+            "name": "__1916b81b82f72a9b",
+            "subject": "fsaverage",
+            "min": -2.9607996940612793,
+            "max": 5.6376471519470215,
+            "raw": false
+        },
+        "__e3f778d276129032": {
+            "split": 163842,
+            "frames": 1,
+            "name": "__e3f778d276129032",
+            "subject": "fsaverage",
+            "min": 0.0,
+            "max": 98.19232940673828,
+            "raw": false
+        },
+        "__1d9638ce3ac6d2a5": {
+            "split": 163842,
+            "frames": 1,
+            "name": "__1d9638ce3ac6d2a5",
+            "subject": "fsaverage",
+            "min": -2.91679048538208,
+            "max": 2.801504611968994,
+            "raw": false
+        },
+        "__681842543c9c5571": {
+            "split": 163842,
+            "frames": 1,
+            "name": "__681842543c9c5571",
+            "subject": "fsaverage",
+            "min": -1.4094212055206299,
+            "max": 1.8248766660690308,
+            "raw": false
+        },
+        "__3b8cc5421904d733": {
+            "split": 163842,
+            "frames": 1,
+            "name": "__3b8cc5421904d733",
+            "subject": "fsaverage",
+            "min": 0.0,
+            "max": 7149.7958984375,
+            "raw": false
+        },
+        "__7e07abb04fca89ae": {
+            "split": 163842,
+            "frames": 1,
+            "name": "__7e07abb04fca89ae",
+            "subject": "fsaverage",
+            "min": -0.32027849555015564,
+            "max": 3.136444091796875,
+            "raw": false
+        },
+        "__1757936eba02133e": {
+            "split": 163842,
+            "frames": 1,
+            "name": "__1757936eba02133e",
+            "subject": "fsaverage",
+            "min": 0.15512725710868835,
+            "max": 2.075145959854126,
+            "raw": false
+        },
+        "__2c2a03a4d13adc08": {
+            "split": 163842,
+            "frames": 1,
+            "name": "__2c2a03a4d13adc08",
+            "subject": "fsaverage",
+            "min": -0.6087243556976318,
+            "max": 0.4492344558238983,
+            "raw": false
+        },
+        "__7cd9a729ca6f6336": {
+            "split": 163842,
+            "frames": 1,
+            "name": "__7cd9a729ca6f6336",
+            "subject": "fsaverage",
+            "min": 0.0,
+            "max": 39.238861083984375,
+            "raw": false
+        },
+        "__c262a1f0ade2d217": {
+            "split": 163842,
+            "frames": 1,
+            "name": "__c262a1f0ade2d217",
+            "subject": "fsaverage",
+            "min": 0.0,
+            "max": 4.142905235290527,
+            "raw": false
+        },
+        "__462c9a59bc5fd017": {
+            "split": 163842,
+            "frames": 1,
+            "name": "__462c9a59bc5fd017",
+            "subject": "fsaverage",
+            "min": -0.7797196507453918,
+            "max": 0.6975629329681396,
+            "raw": false
+        },
+        "__44b965e7928e5a3f": {
+            "split": 163842,
+            "frames": 1,
+            "name": "__44b965e7928e5a3f",
+            "subject": "fsaverage",
+            "min": -0.00929650291800499,
+            "max": 1.3674707412719727,
+            "raw": false
+        },
+        "__94cb4e9343a8d052": {
+            "split": 163842,
+            "frames": 1,
+            "name": "__94cb4e9343a8d052",
+            "subject": "fsaverage",
+            "min": 0.0,
+            "max": 0.03864536061882973,
+            "raw": false
+        },
+        "__8ec39f31360bbd53": {
+            "split": 163842,
+            "frames": 1,
+            "name": "__8ec39f31360bbd53",
+            "subject": "fsaverage",
+            "min": 0.0,
+            "max": 4.3667144775390625,
+            "raw": false
+        },
+        "__d28ad744cf64e87a": {
+            "split": 163842,
+            "frames": 1,
+            "name": "__d28ad744cf64e87a",
+            "subject": "fsaverage",
+            "min": 0.0,
+            "max": 1209.611083984375,
+            "raw": false
+        },
+        "__73d30dabbc74b075": {
+            "split": 163842,
+            "frames": 1,
+            "name": "__73d30dabbc74b075",
+            "subject": "fsaverage",
+            "min": 1.661226749420166,
+            "max": 4.879927635192871,
+            "raw": false
+        },
+        "__70cbcb0228ed3fd1": {
+            "split": 163842,
+            "frames": 1,
+            "name": "__70cbcb0228ed3fd1",
+            "subject": "fsaverage",
+            "min": 0.13728798925876617,
+            "max": 7.82353401184082,
+            "raw": false
+        },
+        "__c783b6c390e7b931": {
+            "split": 163842,
+            "frames": 1,
+            "name": "__c783b6c390e7b931",
+            "subject": "fsaverage",
+            "min": 0.0,
+            "max": 71.12452697753906,
+            "raw": false
+        },
+        "__46ff2781e796f6d1": {
+            "split": 163842,
+            "frames": 1,
+            "name": "__46ff2781e796f6d1",
+            "subject": "fsaverage",
+            "min": 0.0,
+            "max": 0.1430431604385376,
+            "raw": false
+        },
+        "__6b9da97173e2479b": {
+            "split": 163842,
+            "frames": 1,
+            "name": "__6b9da97173e2479b",
+            "subject": "fsaverage",
+            "min": -5.423532009124756,
+            "max": 6.839271545410156,
+            "raw": false
+        },
+        "__fa89d9f07182ecac": {
+            "split": 163842,
+            "frames": 1,
+            "name": "__fa89d9f07182ecac",
+            "subject": "fsaverage",
+            "min": 6.868526458740234,
+            "max": 64.0692367553711,
+            "raw": false
+        },
+        "__547975ea8b043ca6": {
+            "split": 163842,
+            "frames": 1,
+            "name": "__547975ea8b043ca6",
+            "subject": "fsaverage",
+            "min": 0.0,
+            "max": 0.3227086365222931,
+            "raw": false
+        },
+        "__8c9854c652167c15": {
+            "split": 163842,
+            "frames": 1,
+            "name": "__8c9854c652167c15",
+            "subject": "fsaverage",
+            "min": 8.265588760375977,
+            "max": 98.25416564941406,
+            "raw": false
+        },
+        "__7808fcf5cb6720f0": {
+            "split": 163842,
+            "frames": 1,
+            "name": "__7808fcf5cb6720f0",
+            "subject": "fsaverage",
+            "min": 0.0,
+            "max": 51.09235382080078,
+            "raw": false
+        },
+        "__8169f21d433bc14a": {
+            "split": 163842,
+            "frames": 1,
+            "name": "__8169f21d433bc14a",
+            "subject": "fsaverage",
+            "min": 0.0,
+            "max": 0.41096699237823486,
+            "raw": false
+        },
+        "__c6d87604aa70866f": {
+            "split": 163842,
+            "frames": 1,
+            "name": "__c6d87604aa70866f",
+            "subject": "fsaverage",
+            "min": 0.0,
+            "max": 1.8892669677734375,
+            "raw": false
+        },
+        "__8ae7eb7102e12611": {
+            "split": 163842,
+            "frames": 1,
+            "name": "__8ae7eb7102e12611",
+            "subject": "fsaverage",
+            "min": -2.536205768585205,
+            "max": 1.1960186958312988,
+            "raw": false
+        },
+        "__4782004559b51abb": {
+            "split": 163842,
+            "frames": 1,
+            "name": "__4782004559b51abb",
+            "subject": "fsaverage",
+            "min": 0.0,
+            "max": 28.076841354370117,
+            "raw": false
+        },
+        "__310f64b0808bfe9a": {
+            "split": 163842,
+            "frames": 1,
+            "name": "__310f64b0808bfe9a",
+            "subject": "fsaverage",
+            "min": 0.0,
+            "max": 2.974496603012085,
+            "raw": false
+        },
+        "__961e8c41a11e0dfc": {
+            "split": 163842,
+            "frames": 1,
+            "name": "__961e8c41a11e0dfc",
+            "subject": "fsaverage",
+            "min": 0.7169906497001648,
+            "max": 1.4604820013046265,
+            "raw": false
+        },
+        "__86df4ae89426101f": {
+            "split": 163842,
+            "frames": 1,
+            "name": "__86df4ae89426101f",
+            "subject": "fsaverage",
+            "min": 0.0,
+            "max": 7658.181640625,
+            "raw": false
+        },
+        "__4e1a6f265ee95e56": {
+            "split": 163842,
+            "frames": 1,
+            "name": "__4e1a6f265ee95e56",
+            "subject": "fsaverage",
+            "min": 0.0,
+            "max": 0.7790277600288391,
+            "raw": false
+        },
+        "__1f438d2dd69df272": {
+            "split": 163842,
+            "frames": 1,
+            "name": "__1f438d2dd69df272",
+            "subject": "fsaverage",
+            "min": -0.3838087320327759,
+            "max": 0.5264953970909119,
+            "raw": false
+        },
+        "__4a32a7f23c9a196d": {
+            "split": 163842,
+            "frames": 1,
+            "name": "__4a32a7f23c9a196d",
+            "subject": "fsaverage",
+            "min": -2.369326114654541,
+            "max": 2.8526666164398193,
+            "raw": false
+        },
+        "__b8aebb5aecedcfd2": {
+            "split": 163842,
+            "frames": 1,
+            "name": "__b8aebb5aecedcfd2",
+            "subject": "fsaverage",
+            "min": 0.0,
+            "max": 68.13587188720703,
+            "raw": false
+        },
+        "__a5f54393d928e053": {
+            "split": 163842,
+            "frames": 1,
+            "name": "__a5f54393d928e053",
+            "subject": "fsaverage",
+            "min": 6.601253986358643,
+            "max": 61.37468338012695,
+            "raw": false
+        },
+        "__e406beb0363c00c5": {
+            "split": 163842,
+            "frames": 1,
+            "name": "__e406beb0363c00c5",
+            "subject": "fsaverage",
+            "min": 0.0,
+            "max": 5.25931978225708,
+            "raw": false
+        }
+    },
+    "images": {
+        "__e506186d71676e98": [
+            "data/__e506186d71676e98_0.png"
+        ],
+        "__90795dc76bfa8377": [
+            "data/__90795dc76bfa8377_0.png"
+        ],
+        "__b6d4945c3b1e24ba": [
+            "data/__b6d4945c3b1e24ba_0.png"
+        ],
+        "__2987be75f41bfafb": [
+            "data/__2987be75f41bfafb_0.png"
+        ],
+        "__54e102bf7c05d2ca": [
+            "data/__54e102bf7c05d2ca_0.png"
+        ],
+        "__595c6fc7173e96f3": [
+            "data/__595c6fc7173e96f3_0.png"
+        ],
+        "__6639ea61f9f828d7": [
+            "data/__6639ea61f9f828d7_0.png"
+        ],
+        "__1969d94a7b855937": [
+            "data/__1969d94a7b855937_0.png"
+        ],
+        "__fafc258a3895b88d": [
+            "data/__fafc258a3895b88d_0.png"
+        ],
+        "__ca07adc801a42c1f": [
+            "data/__ca07adc801a42c1f_0.png"
+        ],
+        "__cd0bca582091fae3": [
+            "data/__cd0bca582091fae3_0.png"
+        ],
+        "__175c75012d88475f": [
+            "data/__175c75012d88475f_0.png"
+        ],
+        "__93aec8d405207f5d": [
+            "data/__93aec8d405207f5d_0.png"
+        ],
+        "__b1ab230d3206b105": [
+            "data/__b1ab230d3206b105_0.png"
+        ],
+        "__5365fa243add3d1b": [
+            "data/__5365fa243add3d1b_0.png"
+        ],
+        "__6cc1b2dac79fa421": [
+            "data/__6cc1b2dac79fa421_0.png"
+        ],
+        "__97fbf3c2b42dd17f": [
+            "data/__97fbf3c2b42dd17f_0.png"
+        ],
+        "__382f7f35786017d6": [
+            "data/__382f7f35786017d6_0.png"
+        ],
+        "__f76001bbc0001dce": [
+            "data/__f76001bbc0001dce_0.png"
+        ],
+        "__e47a83a7955f3aee": [
+            "data/__e47a83a7955f3aee_0.png"
+        ],
+        "__b48fc355b54c3e6c": [
+            "data/__b48fc355b54c3e6c_0.png"
+        ],
+        "__cfc08e125880f374": [
+            "data/__cfc08e125880f374_0.png"
+        ],
+        "__d4608d7c5996c968": [
+            "data/__d4608d7c5996c968_0.png"
+        ],
+        "__b9bcce6e8d1fb196": [
+            "data/__b9bcce6e8d1fb196_0.png"
+        ],
+        "__1916b81b82f72a9b": [
+            "data/__1916b81b82f72a9b_0.png"
+        ],
+        "__e3f778d276129032": [
+            "data/__e3f778d276129032_0.png"
+        ],
+        "__1d9638ce3ac6d2a5": [
+            "data/__1d9638ce3ac6d2a5_0.png"
+        ],
+        "__681842543c9c5571": [
+            "data/__681842543c9c5571_0.png"
+        ],
+        "__3b8cc5421904d733": [
+            "data/__3b8cc5421904d733_0.png"
+        ],
+        "__7e07abb04fca89ae": [
+            "data/__7e07abb04fca89ae_0.png"
+        ],
+        "__1757936eba02133e": [
+            "data/__1757936eba02133e_0.png"
+        ],
+        "__2c2a03a4d13adc08": [
+            "data/__2c2a03a4d13adc08_0.png"
+        ],
+        "__7cd9a729ca6f6336": [
+            "data/__7cd9a729ca6f6336_0.png"
+        ],
+        "__c262a1f0ade2d217": [
+            "data/__c262a1f0ade2d217_0.png"
+        ],
+        "__462c9a59bc5fd017": [
+            "data/__462c9a59bc5fd017_0.png"
+        ],
+        "__44b965e7928e5a3f": [
+            "data/__44b965e7928e5a3f_0.png"
+        ],
+        "__94cb4e9343a8d052": [
+            "data/__94cb4e9343a8d052_0.png"
+        ],
+        "__8ec39f31360bbd53": [
+            "data/__8ec39f31360bbd53_0.png"
+        ],
+        "__d28ad744cf64e87a": [
+            "data/__d28ad744cf64e87a_0.png"
+        ],
+        "__73d30dabbc74b075": [
+            "data/__73d30dabbc74b075_0.png"
+        ],
+        "__70cbcb0228ed3fd1": [
+            "data/__70cbcb0228ed3fd1_0.png"
+        ],
+        "__c783b6c390e7b931": [
+            "data/__c783b6c390e7b931_0.png"
+        ],
+        "__46ff2781e796f6d1": [
+            "data/__46ff2781e796f6d1_0.png"
+        ],
+        "__6b9da97173e2479b": [
+            "data/__6b9da97173e2479b_0.png"
+        ],
+        "__fa89d9f07182ecac": [
+            "data/__fa89d9f07182ecac_0.png"
+        ],
+        "__547975ea8b043ca6": [
+            "data/__547975ea8b043ca6_0.png"
+        ],
+        "__8c9854c652167c15": [
+            "data/__8c9854c652167c15_0.png"
+        ],
+        "__7808fcf5cb6720f0": [
+            "data/__7808fcf5cb6720f0_0.png"
+        ],
+        "__8169f21d433bc14a": [
+            "data/__8169f21d433bc14a_0.png"
+        ],
+        "__c6d87604aa70866f": [
+            "data/__c6d87604aa70866f_0.png"
+        ],
+        "__8ae7eb7102e12611": [
+            "data/__8ae7eb7102e12611_0.png"
+        ],
+        "__4782004559b51abb": [
+            "data/__4782004559b51abb_0.png"
+        ],
+        "__310f64b0808bfe9a": [
+            "data/__310f64b0808bfe9a_0.png"
+        ],
+        "__961e8c41a11e0dfc": [
+            "data/__961e8c41a11e0dfc_0.png"
+        ],
+        "__86df4ae89426101f": [
+            "data/__86df4ae89426101f_0.png"
+        ],
+        "__4e1a6f265ee95e56": [
+            "data/__4e1a6f265ee95e56_0.png"
+        ],
+        "__1f438d2dd69df272": [
+            "data/__1f438d2dd69df272_0.png"
+        ],
+        "__4a32a7f23c9a196d": [
+            "data/__4a32a7f23c9a196d_0.png"
+        ],
+        "__b8aebb5aecedcfd2": [
+            "data/__b8aebb5aecedcfd2_0.png"
+        ],
+        "__a5f54393d928e053": [
+            "data/__a5f54393d928e053_0.png"
+        ],
+        "__e406beb0363c00c5": [
+            "data/__e406beb0363c00c5_0.png"
+        ]
+    }
+}

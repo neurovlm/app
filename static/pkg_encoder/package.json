@@ -1,0 +1,15 @@
+{
+  "name": "neuroencoder_rs",
+  "type": "module",
+  "version": "0.1.0",
+  "files": [
+    "neuroencoder_bg.wasm",
+    "neuroencoder.js",
+    "neuroencoder.d.ts"
+  ],
+  "main": "neuroencoder.js",
+  "types": "neuroencoder.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}

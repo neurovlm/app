@@ -1,0 +1,1861 @@
+<!DOCTYPE html>
+<head>
+<script type="text/javascript">
+	if (window.webkitURL)
+		window.URL = window.webkitURL;
+</script>
+
+<title>Brain</title>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+<link rel="stylesheet" type="text/css" href="/static/css/styles.css">
+<link rel="stylesheet" type="text/css" href="/static/css/loader.css">
+
+<script type="module" src="/static/index.js"></script>
+<script type="text/js-worker" id=CTMWorker>
+  var LZMA = LZMA || {};
+
+  LZMA.OutWindow = function(){
+    this._windowSize = 0;
+  };
+
+  LZMA.OutWindow.prototype.create = function(windowSize){
+    if ( (!this._buffer) || (this._windowSize !== windowSize) ){
+      this._buffer = [];
+    }
+    this._windowSize = windowSize;
+    this._pos = 0;
+    this._streamPos = 0;
+  };
+
+  LZMA.OutWindow.prototype.flush = function(){
+    var size = this._pos - this._streamPos;
+    if (size !== 0){
+      while(size --){
+        this._stream.writeByte(this._buffer[this._streamPos ++]);
+      }
+      if (this._pos >= this._windowSize){
+        this._pos = 0;
+      }
+      this._streamPos = this._pos;
+    }
+  };
+
+  LZMA.OutWindow.prototype.releaseStream = function(){
+    this.flush();
+    this._stream = null;
+  };
+
+  LZMA.OutWindow.prototype.setStream = function(stream){
+    this.releaseStream();
+    this._stream = stream;
+  };
+
+  LZMA.OutWindow.prototype.init = function(solid){
+    if (!solid){
+      this._streamPos = 0;
+      this._pos = 0;
+    }
+  };
+
+  LZMA.OutWindow.prototype.copyBlock = function(distance, len){
+    var pos = this._pos - distance - 1;
+    if (pos < 0){
+      pos += this._windowSize;
+    }
+    while(len --){
+      if (pos >= this._windowSize){
+        pos = 0;
+      }
+      this._buffer[this._pos ++] = this._buffer[pos ++];
+      if (this._pos >= this._windowSize){
+        this.flush();
+      }
+    }
+  };
+
+  LZMA.OutWindow.prototype.putByte = function(b){
+    this._buffer[this._pos ++] = b;
+    if (this._pos >= this._windowSize){
+      this.flush();
+    }
+  };
+
+  LZMA.OutWindow.prototype.getByte = function(distance){
+    var pos = this._pos - distance - 1;
+    if (pos < 0){
+      pos += this._windowSize;
+    }
+    return this._buffer[pos];
+  };
+
+  LZMA.RangeDecoder = function(){
+  };
+
+  LZMA.RangeDecoder.prototype.setStream = function(stream){
+    this._stream = stream;
+  };
+
+  LZMA.RangeDecoder.prototype.releaseStream = function(){
+    this._stream = null;
+  };
+
+  LZMA.RangeDecoder.prototype.init = function(){
+    var i = 5;
+
+    this._code = 0;
+    this._range = -1;
+
+    while(i --){
+      this._code = (this._code << 8) | this._stream.readByte();
+    }
+  };
+
+  LZMA.RangeDecoder.prototype.decodeDirectBits = function(numTotalBits){
+    var result = 0, i = numTotalBits, t;
+
+    while(i --){
+      this._range >>>= 1;
+      t = (this._code - this._range) >>> 31;
+      this._code -= this._range & (t - 1);
+      result = (result << 1) | (1 - t);
+
+      if ( (this._range & 0xff000000) === 0){
+        this._code = (this._code << 8) | this._stream.readByte();
+        this._range <<= 8;
+      }
+    }
+
+    return result;
+  };
+
+  LZMA.RangeDecoder.prototype.decodeBit = function(probs, index){
+    var prob = probs[index],
+        newBound = (this._range >>> 11) * prob;
+
+    if ( (this._code ^ 0x80000000) < (newBound ^ 0x80000000) ){
+      this._range = newBound;
+      probs[index] += (2048 - prob) >>> 5;
+      if ( (this._range & 0xff000000) === 0){
+        this._code = (this._code << 8) | this._stream.readByte();
+        this._range <<= 8;
+      }
+      return 0;
+    }
+
+    this._range -= newBound;
+    this._code -= newBound;
+    probs[index] -= prob >>> 5;
+    if ( (this._range & 0xff000000) === 0){
+      this._code = (this._code << 8) | this._stream.readByte();
+      this._range <<= 8;
+    }
+    return 1;
+  };
+
+  LZMA.initBitModels = function(probs, len){
+    while(len --){
+      probs[len] = 1024;
+    }
+  };
+
+  LZMA.BitTreeDecoder = function(numBitLevels){
+    this._models = [];
+    this._numBitLevels = numBitLevels;
+  };
+
+  LZMA.BitTreeDecoder.prototype.init = function(){
+    LZMA.initBitModels(this._models, 1 << this._numBitLevels);
+  };
+
+  LZMA.BitTreeDecoder.prototype.decode = function(rangeDecoder){
+    var m = 1, i = this._numBitLevels;
+
+    while(i --){
+      m = (m << 1) | rangeDecoder.decodeBit(this._models, m);
+    }
+    return m - (1 << this._numBitLevels);
+  };
+
+  LZMA.BitTreeDecoder.prototype.reverseDecode = function(rangeDecoder){
+    var m = 1, symbol = 0, i = 0, bit;
+
+    for (; i < this._numBitLevels; ++ i){
+      bit = rangeDecoder.decodeBit(this._models, m);
+      m = (m << 1) | bit;
+      symbol |= bit << i;
+    }
+    return symbol;
+  };
+
+  LZMA.reverseDecode2 = function(models, startIndex, rangeDecoder, numBitLevels){
+    var m = 1, symbol = 0, i = 0, bit;
+
+    for (; i < numBitLevels; ++ i){
+      bit = rangeDecoder.decodeBit(models, startIndex + m);
+      m = (m << 1) | bit;
+      symbol |= bit << i;
+    }
+    return symbol;
+  };
+
+  LZMA.LenDecoder = function(){
+    this._choice = [];
+    this._lowCoder = [];
+    this._midCoder = [];
+    this._highCoder = new LZMA.BitTreeDecoder(8);
+    this._numPosStates = 0;
+  };
+
+  LZMA.LenDecoder.prototype.create = function(numPosStates){
+    for (; this._numPosStates < numPosStates; ++ this._numPosStates){
+      this._lowCoder[this._numPosStates] = new LZMA.BitTreeDecoder(3);
+      this._midCoder[this._numPosStates] = new LZMA.BitTreeDecoder(3);
+    }
+  };
+
+  LZMA.LenDecoder.prototype.init = function(){
+    var i = this._numPosStates;
+    LZMA.initBitModels(this._choice, 2);
+    while(i --){
+      this._lowCoder[i].init();
+      this._midCoder[i].init();
+    }
+    this._highCoder.init();
+  };
+
+  LZMA.LenDecoder.prototype.decode = function(rangeDecoder, posState){
+    if (rangeDecoder.decodeBit(this._choice, 0) === 0){
+      return this._lowCoder[posState].decode(rangeDecoder);
+    }
+    if (rangeDecoder.decodeBit(this._choice, 1) === 0){
+      return 8 + this._midCoder[posState].decode(rangeDecoder);
+    }
+    return 16 + this._highCoder.decode(rangeDecoder);
+  };
+
+  LZMA.Decoder2 = function(){
+    this._decoders = [];
+  };
+
+  LZMA.Decoder2.prototype.init = function(){
+    LZMA.initBitModels(this._decoders, 0x300);
+  };
+
+  LZMA.Decoder2.prototype.decodeNormal = function(rangeDecoder){
+    var symbol = 1;
+
+    do{
+      symbol = (symbol << 1) | rangeDecoder.decodeBit(this._decoders, symbol);
+    }while(symbol < 0x100);
+
+    return symbol & 0xff;
+  };
+
+  LZMA.Decoder2.prototype.decodeWithMatchByte = function(rangeDecoder, matchByte){
+    var symbol = 1, matchBit, bit;
+
+    do{
+      matchBit = (matchByte >> 7) & 1;
+      matchByte <<= 1;
+      bit = rangeDecoder.decodeBit(this._decoders, ( (1 + matchBit) << 8) + symbol);
+      symbol = (symbol << 1) | bit;
+      if (matchBit !== bit){
+        while(symbol < 0x100){
+          symbol = (symbol << 1) | rangeDecoder.decodeBit(this._decoders, symbol);
+        }
+        break;
+      }
+    }while(symbol < 0x100);
+
+    return symbol & 0xff;
+  };
+
+  LZMA.LiteralDecoder = function(){
+  };
+
+  LZMA.LiteralDecoder.prototype.create = function(numPosBits, numPrevBits){
+    var i;
+
+    if (this._coders
+      && (this._numPrevBits === numPrevBits)
+      && (this._numPosBits === numPosBits) ){
+      return;
+    }
+    this._numPosBits = numPosBits;
+    this._posMask = (1 << numPosBits) - 1;
+    this._numPrevBits = numPrevBits;
+
+    this._coders = [];
+
+    i = 1 << (this._numPrevBits + this._numPosBits);
+    while(i --){
+      this._coders[i] = new LZMA.Decoder2();
+    }
+  };
+
+  LZMA.LiteralDecoder.prototype.init = function(){
+    var i = 1 << (this._numPrevBits + this._numPosBits);
+    while(i --){
+      this._coders[i].init();
+    }
+  };
+
+  LZMA.LiteralDecoder.prototype.getDecoder = function(pos, prevByte){
+    return this._coders[( (pos & this._posMask) << this._numPrevBits)
+      + ( (prevByte & 0xff) >>> (8 - this._numPrevBits) )];
+  };
+
+  LZMA.Decoder = function(){
+    this._outWindow = new LZMA.OutWindow();
+    this._rangeDecoder = new LZMA.RangeDecoder();
+    this._isMatchDecoders = [];
+    this._isRepDecoders = [];
+    this._isRepG0Decoders = [];
+    this._isRepG1Decoders = [];
+    this._isRepG2Decoders = [];
+    this._isRep0LongDecoders = [];
+    this._posSlotDecoder = [];
+    this._posDecoders = [];
+    this._posAlignDecoder = new LZMA.BitTreeDecoder(4);
+    this._lenDecoder = new LZMA.LenDecoder();
+    this._repLenDecoder = new LZMA.LenDecoder();
+    this._literalDecoder = new LZMA.LiteralDecoder();
+    this._dictionarySize = -1;
+    this._dictionarySizeCheck = -1;
+
+    this._posSlotDecoder[0] = new LZMA.BitTreeDecoder(6);
+    this._posSlotDecoder[1] = new LZMA.BitTreeDecoder(6);
+    this._posSlotDecoder[2] = new LZMA.BitTreeDecoder(6);
+    this._posSlotDecoder[3] = new LZMA.BitTreeDecoder(6);
+  };
+
+  LZMA.Decoder.prototype.setDictionarySize = function(dictionarySize){
+    if (dictionarySize < 0){
+      return false;
+    }
+    if (this._dictionarySize !== dictionarySize){
+      this._dictionarySize = dictionarySize;
+      this._dictionarySizeCheck = Math.max(this._dictionarySize, 1);
+      this._outWindow.create( Math.max(this._dictionarySizeCheck, 4096) );
+    }
+    return true;
+  };
+
+  LZMA.Decoder.prototype.setLcLpPb = function(lc, lp, pb){
+    var numPosStates = 1 << pb;
+
+    if (lc > 8 || lp > 4 || pb > 4){
+      return false;
+    }
+
+    this._literalDecoder.create(lp, lc);
+
+    this._lenDecoder.create(numPosStates);
+    this._repLenDecoder.create(numPosStates);
+    this._posStateMask = numPosStates - 1;
+
+    return true;
+  };
+
+  LZMA.Decoder.prototype.init = function(){
+    var i = 4;
+
+    this._outWindow.init(false);
+
+    LZMA.initBitModels(this._isMatchDecoders, 192);
+    LZMA.initBitModels(this._isRep0LongDecoders, 192);
+    LZMA.initBitModels(this._isRepDecoders, 12);
+    LZMA.initBitModels(this._isRepG0Decoders, 12);
+    LZMA.initBitModels(this._isRepG1Decoders, 12);
+    LZMA.initBitModels(this._isRepG2Decoders, 12);
+    LZMA.initBitModels(this._posDecoders, 114);
+
+    this._literalDecoder.init();
+
+    while(i --){
+      this._posSlotDecoder[i].init();
+    }
+
+    this._lenDecoder.init();
+    this._repLenDecoder.init();
+    this._posAlignDecoder.init();
+    this._rangeDecoder.init();
+  };
+
+  LZMA.Decoder.prototype.decode = function(inStream, outStream, outSize){
+    var state = 0, rep0 = 0, rep1 = 0, rep2 = 0, rep3 = 0, nowPos64 = 0, prevByte = 0,
+        posState, decoder2, len, distance, posSlot, numDirectBits;
+
+    this._rangeDecoder.setStream(inStream);
+    this._outWindow.setStream(outStream);
+
+    this.init();
+
+    while(outSize < 0 || nowPos64 < outSize){
+      posState = nowPos64 & this._posStateMask;
+
+      if (this._rangeDecoder.decodeBit(this._isMatchDecoders, (state << 4) + posState) === 0){
+        decoder2 = this._literalDecoder.getDecoder(nowPos64 ++, prevByte);
+
+        if (state >= 7){
+          prevByte = decoder2.decodeWithMatchByte(this._rangeDecoder, this._outWindow.getByte(rep0) );
+        }else{
+          prevByte = decoder2.decodeNormal(this._rangeDecoder);
+        }
+        this._outWindow.putByte(prevByte);
+
+        state = state < 4? 0: state - (state < 10? 3: 6);
+
+      }else{
+
+        if (this._rangeDecoder.decodeBit(this._isRepDecoders, state) === 1){
+          len = 0;
+          if (this._rangeDecoder.decodeBit(this._isRepG0Decoders, state) === 0){
+            if (this._rangeDecoder.decodeBit(this._isRep0LongDecoders, (state << 4) + posState) === 0){
+              state = state < 7? 9: 11;
+              len = 1;
+            }
+          }else{
+            if (this._rangeDecoder.decodeBit(this._isRepG1Decoders, state) === 0){
+              distance = rep1;
+            }else{
+              if (this._rangeDecoder.decodeBit(this._isRepG2Decoders, state) === 0){
+                distance = rep2;
+              }else{
+                distance = rep3;
+                rep3 = rep2;
+              }
+              rep2 = rep1;
+            }
+            rep1 = rep0;
+            rep0 = distance;
+          }
+          if (len === 0){
+            len = 2 + this._repLenDecoder.decode(this._rangeDecoder, posState);
+            state = state < 7? 8: 11;
+          }
+        }else{
+          rep3 = rep2;
+          rep2 = rep1;
+          rep1 = rep0;
+
+          len = 2 + this._lenDecoder.decode(this._rangeDecoder, posState);
+          state = state < 7? 7: 10;
+
+          posSlot = this._posSlotDecoder[len <= 5? len - 2: 3].decode(this._rangeDecoder);
+          if (posSlot >= 4){
+
+            numDirectBits = (posSlot >> 1) - 1;
+            rep0 = (2 | (posSlot & 1) ) << numDirectBits;
+
+            if (posSlot < 14){
+              rep0 += LZMA.reverseDecode2(this._posDecoders,
+                  rep0 - posSlot - 1, this._rangeDecoder, numDirectBits);
+            }else{
+              rep0 += this._rangeDecoder.decodeDirectBits(numDirectBits - 4) << 4;
+              rep0 += this._posAlignDecoder.reverseDecode(this._rangeDecoder);
+              if (rep0 < 0){
+                if (rep0 === -1){
+                  break;
+                }
+                return false;
+              }
+            }
+          }else{
+            rep0 = posSlot;
+          }
+        }
+
+        if (rep0 >= nowPos64 || rep0 >= this._dictionarySizeCheck){
+          return false;
+        }
+
+        this._outWindow.copyBlock(rep0, len);
+        nowPos64 += len;
+        prevByte = this._outWindow.getByte(0);
+      }
+    }
+
+    this._outWindow.flush();
+    this._outWindow.releaseStream();
+    this._rangeDecoder.releaseStream();
+
+    return true;
+  };
+
+  LZMA.Decoder.prototype.setDecoderProperties = function(properties){
+    var value, lc, lp, pb, dictionarySize;
+
+    if (properties.size < 5){
+      return false;
+    }
+
+    value = properties.readByte();
+    lc = value % 9;
+    value = ~~(value / 9);
+    lp = value % 5;
+    pb = ~~(value / 5);
+
+    if ( !this.setLcLpPb(lc, lp, pb) ){
+      return false;
+    }
+
+    dictionarySize = properties.readByte();
+    dictionarySize |= properties.readByte() << 8;
+    dictionarySize |= properties.readByte() << 16;
+    dictionarySize += properties.readByte() * 16777216;
+
+    return this.setDictionarySize(dictionarySize);
+  };
+
+  LZMA.decompress = function(properties, inStream, outStream, outSize){
+    var decoder = new LZMA.Decoder();
+
+    if ( !decoder.setDecoderProperties(properties) ){
+      throw "Incorrect stream properties";
+    }
+
+    if ( !decoder.decode(inStream, outStream, outSize) ){
+      throw "Error in data stream";
+    }
+
+    return true;
+  };
+
+
+  var CTM = CTM || {};
+
+  CTM.CompressionMethod = {
+    RAW: 0x00574152,
+    MG1: 0x0031474d,
+    MG2: 0x0032474d
+  };
+
+  CTM.Flags = {
+    NORMALS: 0x00000001
+  };
+
+  CTM.File = function(stream){
+    this.load(stream);
+  };
+
+  CTM.File.prototype.load = function(stream){
+    this.header = new CTM.FileHeader(stream);
+
+    this.body = new CTM.FileBody(this.header);
+
+    this.getReader().read(stream, this.body);
+  };
+
+  CTM.File.prototype.getReader = function(){
+    var reader;
+
+    switch(this.header.compressionMethod){
+      case CTM.CompressionMethod.RAW:
+        reader = new CTM.ReaderRAW();
+        break;
+      case CTM.CompressionMethod.MG1:
+        reader = new CTM.ReaderMG1();
+        break;
+      case CTM.CompressionMethod.MG2:
+        reader = new CTM.ReaderMG2();
+        break;
+    }
+
+    return reader;
+  };
+
+  CTM.FileHeader = function(stream){
+    stream.readInt32(); //magic "OCTM"
+    this.fileFormat = stream.readInt32();
+    this.compressionMethod = stream.readInt32();
+    this.vertexCount = stream.readInt32();
+    this.triangleCount = stream.readInt32();
+    this.uvMapCount = stream.readInt32();
+    this.attrMapCount = stream.readInt32();
+    this.flags = stream.readInt32();
+    this.comment = stream.readString();
+  };
+
+  CTM.FileHeader.prototype.hasNormals = function(){
+    return this.flags & CTM.Flags.NORMALS;
+  };
+
+  CTM.FileBody = function(header){
+    var i = header.triangleCount * 3,
+        v = header.vertexCount * 3,
+        n = header.hasNormals()? header.vertexCount * 3: 0,
+        u = header.vertexCount * 2,
+        a = header.vertexCount * 4,
+        j = 0;
+
+    var data = new ArrayBuffer(
+      (i + v + n + (u * header.uvMapCount) + (a * header.attrMapCount) ) * 4);
+
+    this.indices = new Uint32Array(data, 0, i);
+
+    this.vertices = new Float32Array(data, i * 4, v);
+
+    if ( header.hasNormals() ){
+      this.normals = new Float32Array(data, (i + v) * 4, n);
+    }
+
+    if (header.uvMapCount){
+      this.uvMaps = [];
+      for (j = 0; j < header.uvMapCount; ++ j){
+        this.uvMaps[j] = {uv: new Float32Array(data,
+          (i + v + n + (j * u) ) * 4, u) };
+      }
+    }
+
+    if (header.attrMapCount){
+      this.attrMaps = [];
+      for (j = 0; j < header.attrMapCount; ++ j){
+        this.attrMaps[j] = {attr: new Float32Array(data,
+          (i + v + n + (u * header.uvMapCount) + (j * a) ) * 4, a) };
+      }
+    }
+  };
+
+  CTM.FileMG2Header = function(stream){
+    stream.readInt32(); //magic "MG2H"
+    this.vertexPrecision = stream.readFloat32();
+    this.normalPrecision = stream.readFloat32();
+    this.lowerBoundx = stream.readFloat32();
+    this.lowerBoundy = stream.readFloat32();
+    this.lowerBoundz = stream.readFloat32();
+    this.higherBoundx = stream.readFloat32();
+    this.higherBoundy = stream.readFloat32();
+    this.higherBoundz = stream.readFloat32();
+    this.divx = stream.readInt32();
+    this.divy = stream.readInt32();
+    this.divz = stream.readInt32();
+
+    this.sizex = (this.higherBoundx - this.lowerBoundx) / this.divx;
+    this.sizey = (this.higherBoundy - this.lowerBoundy) / this.divy;
+    this.sizez = (this.higherBoundz - this.lowerBoundz) / this.divz;
+  };
+
+  CTM.ReaderRAW = function(){
+  };
+
+  CTM.ReaderRAW.prototype.read = function(stream, body){
+    this.readIndices(stream, body.indices);
+    this.readVertices(stream, body.vertices);
+
+    if (body.normals){
+      this.readNormals(stream, body.normals);
+    }
+    if (body.uvMaps){
+      this.readUVMaps(stream, body.uvMaps);
+    }
+    if (body.attrMaps){
+      this.readAttrMaps(stream, body.attrMaps);
+    }
+  };
+
+  CTM.ReaderRAW.prototype.readIndices = function(stream, indices){
+    stream.readInt32(); //magic "INDX"
+    stream.readArrayInt32(indices);
+  };
+
+  CTM.ReaderRAW.prototype.readVertices = function(stream, vertices){
+    stream.readInt32(); //magic "VERT"
+    stream.readArrayFloat32(vertices);
+  };
+
+  CTM.ReaderRAW.prototype.readNormals = function(stream, normals){
+    stream.readInt32(); //magic "NORM"
+    stream.readArrayFloat32(normals);
+  };
+
+  CTM.ReaderRAW.prototype.readUVMaps = function(stream, uvMaps){
+    var i = 0;
+    for (; i < uvMaps.length; ++ i){
+      stream.readInt32(); //magic "TEXC"
+
+      uvMaps[i].name = stream.readString();
+      uvMaps[i].filename = stream.readString();
+      stream.readArrayFloat32(uvMaps[i].uv);
+    }
+  };
+
+  CTM.ReaderRAW.prototype.readAttrMaps = function(stream, attrMaps){
+    var i = 0;
+    for (; i < attrMaps.length; ++ i){
+      stream.readInt32(); //magic "ATTR"
+
+      attrMaps[i].name = stream.readString();
+      stream.readArrayFloat32(attrMaps[i].attr);
+    }
+  };
+
+  CTM.ReaderMG1 = function(){
+  };
+
+  CTM.ReaderMG1.prototype.read = function(stream, body){
+    this.readIndices(stream, body.indices);
+    this.readVertices(stream, body.vertices);
+
+    if (body.normals){
+      this.readNormals(stream, body.normals);
+    }
+    if (body.uvMaps){
+      this.readUVMaps(stream, body.uvMaps);
+    }
+    if (body.attrMaps){
+      this.readAttrMaps(stream, body.attrMaps);
+    }
+  };
+
+  CTM.ReaderMG1.prototype.readIndices = function(stream, indices){
+    stream.readInt32(); //magic "INDX"
+    stream.readInt32(); //packed size
+
+    var interleaved = new CTM.InterleavedStream(indices, 3);
+    LZMA.decompress(stream, stream, interleaved, interleaved.data.length);
+
+    CTM.restoreIndices(indices, indices.length);
+  };
+
+  CTM.ReaderMG1.prototype.readVertices = function(stream, vertices){
+    stream.readInt32(); //magic "VERT"
+    stream.readInt32(); //packed size
+
+    var interleaved = new CTM.InterleavedStream(vertices, 1);
+    LZMA.decompress(stream, stream, interleaved, interleaved.data.length);
+  };
+
+  CTM.ReaderMG1.prototype.readNormals = function(stream, normals){
+    stream.readInt32(); //magic "NORM"
+    stream.readInt32(); //packed size
+
+    var interleaved = new CTM.InterleavedStream(normals, 3);
+    LZMA.decompress(stream, stream, interleaved, interleaved.data.length);
+  };
+
+  CTM.ReaderMG1.prototype.readUVMaps = function(stream, uvMaps){
+    var i = 0;
+    for (; i < uvMaps.length; ++ i){
+      stream.readInt32(); //magic "TEXC"
+
+      uvMaps[i].name = stream.readString();
+      uvMaps[i].filename = stream.readString();
+
+      stream.readInt32(); //packed size
+
+      var interleaved = new CTM.InterleavedStream(uvMaps[i].uv, 2);
+      LZMA.decompress(stream, stream, interleaved, interleaved.data.length);
+    }
+  };
+
+  CTM.ReaderMG1.prototype.readAttrMaps = function(stream, attrMaps){
+    var i = 0;
+    for (; i < attrMaps.length; ++ i){
+      stream.readInt32(); //magic "ATTR"
+
+      attrMaps[i].name = stream.readString();
+
+      stream.readInt32(); //packed size
+
+      var interleaved = new CTM.InterleavedStream(attrMaps[i].attr, 4);
+      LZMA.decompress(stream, stream, interleaved, interleaved.data.length);
+    }
+  };
+
+  CTM.ReaderMG2 = function(){
+  };
+
+  CTM.ReaderMG2.prototype.read = function(stream, body){
+    this.MG2Header = new CTM.FileMG2Header(stream);
+
+    this.readVertices(stream, body.vertices);
+    this.readIndices(stream, body.indices);
+
+    if (body.normals){
+      this.readNormals(stream, body);
+    }
+    if (body.uvMaps){
+      this.readUVMaps(stream, body.uvMaps);
+    }
+    if (body.attrMaps){
+      this.readAttrMaps(stream, body.attrMaps);
+    }
+  };
+
+  CTM.ReaderMG2.prototype.readVertices = function(stream, vertices){
+    stream.readInt32(); //magic "VERT"
+    stream.readInt32(); //packed size
+
+    var interleaved = new CTM.InterleavedStream(vertices, 3);
+    LZMA.decompress(stream, stream, interleaved, interleaved.data.length);
+
+    var gridIndices = this.readGridIndices(stream, vertices);
+
+    CTM.restoreVertices(vertices, this.MG2Header, gridIndices, this.MG2Header.vertexPrecision);
+  };
+
+  CTM.ReaderMG2.prototype.readGridIndices = function(stream, vertices){
+    stream.readInt32(); //magic "GIDX"
+    stream.readInt32(); //packed size
+
+    var gridIndices = new Uint32Array(vertices.length / 3);
+
+    var interleaved = new CTM.InterleavedStream(gridIndices, 1);
+    LZMA.decompress(stream, stream, interleaved, interleaved.data.length);
+
+    CTM.restoreGridIndices(gridIndices, gridIndices.length);
+
+    return gridIndices;
+  };
+
+  CTM.ReaderMG2.prototype.readIndices = function(stream, indices){
+    stream.readInt32(); //magic "INDX"
+    stream.readInt32(); //packed size
+
+    var interleaved = new CTM.InterleavedStream(indices, 3);
+    LZMA.decompress(stream, stream, interleaved, interleaved.data.length);
+
+    CTM.restoreIndices(indices, indices.length);
+  };
+
+  CTM.ReaderMG2.prototype.readNormals = function(stream, body){
+    stream.readInt32(); //magic "NORM"
+    stream.readInt32(); //packed size
+
+    var interleaved = new CTM.InterleavedStream(body.normals, 3);
+    LZMA.decompress(stream, stream, interleaved, interleaved.data.length);
+
+    var smooth = CTM.calcSmoothNormals(body.indices, body.vertices);
+
+    CTM.restoreNormals(body.normals, smooth, this.MG2Header.normalPrecision);
+  };
+
+  CTM.ReaderMG2.prototype.readUVMaps = function(stream, uvMaps){
+    var i = 0;
+    for (; i < uvMaps.length; ++ i){
+      stream.readInt32(); //magic "TEXC"
+
+      uvMaps[i].name = stream.readString();
+      uvMaps[i].filename = stream.readString();
+
+      var precision = stream.readFloat32();
+
+      stream.readInt32(); //packed size
+
+      var interleaved = new CTM.InterleavedStream(uvMaps[i].uv, 2);
+      LZMA.decompress(stream, stream, interleaved, interleaved.data.length);
+
+      CTM.restoreMap(uvMaps[i].uv, 2, precision);
+    }
+  };
+
+  CTM.ReaderMG2.prototype.readAttrMaps = function(stream, attrMaps){
+    var i = 0;
+    for (; i < attrMaps.length; ++ i){
+      stream.readInt32(); //magic "ATTR"
+
+      attrMaps[i].name = stream.readString();
+
+      var precision = stream.readFloat32();
+
+      stream.readInt32(); //packed size
+
+      var interleaved = new CTM.InterleavedStream(attrMaps[i].attr, 4);
+      LZMA.decompress(stream, stream, interleaved, interleaved.data.length);
+
+      CTM.restoreMap(attrMaps[i].attr, 4, precision);
+    }
+  };
+
+  CTM.restoreIndices = function(indices, len){
+    var i = 3;
+    if (len > 0){
+      indices[2] += indices[0];
+    }
+    for (; i < len; i += 3){
+      indices[i] += indices[i - 3];
+
+      if (indices[i] === indices[i - 3]){
+        indices[i + 1] += indices[i - 2];
+      }else{
+        indices[i + 1] += indices[i];
+      }
+
+      indices[i + 2] += indices[i];
+    }
+  };
+
+  CTM.restoreGridIndices = function(gridIndices, len){
+    var i = 1;
+    for (; i < len; ++ i){
+      gridIndices[i] += gridIndices[i - 1];
+    }
+  };
+
+  CTM.restoreVertices = function(vertices, grid, gridIndices, precision){
+    var gridIdx, delta, x, y, z,
+        intVertices = new Uint32Array(vertices.buffer, vertices.byteOffset, vertices.length),
+        ydiv = grid.divx, zdiv = ydiv * grid.divy,
+        prevGridIdx = 0x7fffffff, prevDelta = 0,
+        i = 0, j = 0, len = gridIndices.length;
+
+    for (; i < len; j += 3){
+      x = gridIdx = gridIndices[i ++];
+
+      z = ~~(x / zdiv);
+      x -= ~~(z * zdiv);
+      y = ~~(x / ydiv);
+      x -= ~~(y * ydiv);
+
+      delta = intVertices[j];
+      if (gridIdx === prevGridIdx){
+        delta += prevDelta;
+      }
+
+      vertices[j]     = grid.lowerBoundx +
+        x * grid.sizex + precision * delta;
+      vertices[j + 1] = grid.lowerBoundy +
+        y * grid.sizey + precision * intVertices[j + 1];
+      vertices[j + 2] = grid.lowerBoundz +
+        z * grid.sizez + precision * intVertices[j + 2];
+
+      prevGridIdx = gridIdx;
+      prevDelta = delta;
+    }
+  };
+
+  CTM.restoreNormals = function(normals, smooth, precision){
+    var ro, phi, theta, sinPhi,
+        nx, ny, nz, by, bz, len,
+        intNormals = new Uint32Array(normals.buffer, normals.byteOffset, normals.length),
+        i = 0, k = normals.length,
+        PI_DIV_2 = 3.141592653589793238462643 * 0.5;
+
+    for (; i < k; i += 3){
+      ro = intNormals[i] * precision;
+      phi = intNormals[i + 1];
+
+      if (phi === 0){
+        normals[i]     = smooth[i]     * ro;
+        normals[i + 1] = smooth[i + 1] * ro;
+        normals[i + 2] = smooth[i + 2] * ro;
+      }else{
+
+        if (phi <= 4){
+          theta = (intNormals[i + 2] - 2) * PI_DIV_2;
+        }else{
+          theta = ( (intNormals[i + 2] * 4 / phi) - 2) * PI_DIV_2;
+        }
+
+        phi *= precision * PI_DIV_2;
+        sinPhi = ro * Math.sin(phi);
+
+        nx = sinPhi * Math.cos(theta);
+        ny = sinPhi * Math.sin(theta);
+        nz = ro * Math.cos(phi);
+
+        bz = smooth[i + 1];
+        by = smooth[i] - smooth[i + 2];
+
+        len = Math.sqrt(2 * bz * bz + by * by);
+        if (len > 1e-20){
+          by /= len;
+          bz /= len;
+        }
+
+        normals[i]     = smooth[i]     * nz +
+          (smooth[i + 1] * bz - smooth[i + 2] * by) * ny - bz * nx;
+        normals[i + 1] = smooth[i + 1] * nz -
+          (smooth[i + 2]      + smooth[i]   ) * bz  * ny + by * nx;
+        normals[i + 2] = smooth[i + 2] * nz +
+          (smooth[i]     * by + smooth[i + 1] * bz) * ny + bz * nx;
+      }
+    }
+  };
+
+  CTM.restoreMap = function(map, count, precision){
+    var delta, value,
+        intMap = new Uint32Array(map.buffer, map.byteOffset, map.length),
+        i = 0, j, len = map.length;
+
+    for (; i < count; ++ i){
+      delta = 0;
+
+      for (j = i; j < len; j += count){
+        value = intMap[j];
+
+        delta += value & 1? -( (value + 1) >> 1): value >> 1;
+
+        map[j] = delta * precision;
+      }
+    }
+  };
+
+  CTM.calcSmoothNormals = function(indices, vertices){
+    var smooth = new Float32Array(vertices.length),
+        indx, indy, indz, nx, ny, nz,
+        v1x, v1y, v1z, v2x, v2y, v2z, len,
+        i, k;
+
+    for (i = 0, k = indices.length; i < k;){
+      indx = indices[i ++] * 3;
+      indy = indices[i ++] * 3;
+      indz = indices[i ++] * 3;
+
+      v1x = vertices[indy]     - vertices[indx];
+      v2x = vertices[indz]     - vertices[indx];
+      v1y = vertices[indy + 1] - vertices[indx + 1];
+      v2y = vertices[indz + 1] - vertices[indx + 1];
+      v1z = vertices[indy + 2] - vertices[indx + 2];
+      v2z = vertices[indz + 2] - vertices[indx + 2];
+
+      nx = v1y * v2z - v1z * v2y;
+      ny = v1z * v2x - v1x * v2z;
+      nz = v1x * v2y - v1y * v2x;
+
+      len = Math.sqrt(nx * nx + ny * ny + nz * nz);
+      if (len > 1e-10){
+        nx /= len;
+        ny /= len;
+        nz /= len;
+      }
+      smooth[indx]     += nx;
+      smooth[indx + 1] += ny;
+      smooth[indx + 2] += nz;
+      smooth[indy]     += nx;
+      smooth[indy + 1] += ny;
+      smooth[indy + 2] += nz;
+      smooth[indz]     += nx;
+      smooth[indz + 1] += ny;
+      smooth[indz + 2] += nz;
+    }
+    for (i = 0, k = smooth.length; i < k; i += 3){
+      len = Math.sqrt(smooth[i] * smooth[i] +
+        smooth[i + 1] * smooth[i + 1] +
+        smooth[i + 2] * smooth[i + 2]);
+
+      if(len > 1e-10){
+        smooth[i]     /= len;
+        smooth[i + 1] /= len;
+        smooth[i + 2] /= len;
+      }
+    }
+    return smooth;
+  };
+
+  CTM.isLittleEndian = (function(){
+    var buffer = new ArrayBuffer(2),
+        bytes = new Uint8Array(buffer),
+        ints = new Uint16Array(buffer);
+
+    bytes[0] = 1;
+
+    return ints[0] === 1;
+  }());
+
+  CTM.InterleavedStream = function(data, count){
+    this.data = new Uint8Array(data.buffer, data.byteOffset, data.byteLength);
+    this.offset = CTM.isLittleEndian? 3: 0;
+    this.count = count * 4;
+    this.len = this.data.length;
+  };
+
+  CTM.InterleavedStream.prototype.writeByte = function(value){
+    this.data[this.offset] = value;
+
+    this.offset += this.count;
+    if (this.offset >= this.len){
+
+      this.offset -= this.len - 4;
+      if (this.offset >= this.count){
+
+        this.offset -= this.count + (CTM.isLittleEndian? 1: -1);
+      }
+    }
+  };
+
+  CTM.Stream = function(data, offset){
+    this.data = new DataView(data, offset);
+    this.offset = 0;
+  };
+
+  // CTM.Stream.prototype.TWO_POW_MINUS23 = Math.pow(2, -23);
+  // CTM.Stream.prototype.TWO_POW_MINUS126 = Math.pow(2, -126);
+
+  CTM.Stream.prototype.readByte = function(){
+    return this.data.getUint8(this.offset ++);
+  };
+
+  CTM.Stream.prototype.readInt32 = function(){
+    var i = this.data.getUint32(this.offset, true);
+    this.offset += 4;
+    return i;
+  };
+
+  CTM.Stream.prototype.readFloat32 = function(){
+    var i = this.data.getFloat32(this.offset, true);
+    this.offset += 4;
+    return i;
+  };
+
+  CTM.Stream.prototype.readString = function(){
+    var len = this.readInt32();
+    var str = "";
+    for (var i = 0; i < len; i++)
+      str += String.fromCharCode(this.readByte());
+
+    return str;
+  };
+
+  CTM.Stream.prototype.readArrayInt32 = function(array){
+    for (var i = 0, il = array.length; i < il; i++) {
+      array[i] = this.readInt32();
+    }
+    return array;
+  };
+
+  CTM.Stream.prototype.readArrayFloat32 = function(array){
+    for (var i = 0, il = array.length; i < il; i++) {
+      array[i] = this.readFloat32();
+    }
+    return array;
+  };
+  ;
+
+  self.onmessage = function( event ) {
+    var files = [];
+    for ( var i = 0; i < event.data.offsets.length; i ++ ) {
+      var stream = new CTM.Stream( event.data.data );
+      stream.offset = event.data.offsets[ i ];
+      self.postMessage( new CTM.File( stream ) );
+    }
+    self.close();
+  }
+</script>
+
+<script type="text/js-worker" id=facepick_worker>
+(function(){function a(a,b,c){this.obj=a,this.left=null,this.right=null,this.parent=c,this.dimension=b}function b(b,d,e){function g(b,c,d){var f=c%e.length,h,i;return b.length===0?null:b.length===1?new a(b[0],f,d):(b.sort(function(a,b){return a[e[f]]-b[e[f]]}),h=Math.floor(b.length/2),i=new a(b[h],f,d),i.left=g(b.slice(0,h),c+1,i),i.right=g(b.slice(h+1),c+1,i),i)}var f=this;this.root=g(b,0,null),this.insert=function(b){function c(a,d){if(a===null)return d;var f=e[a.dimension];return b[f]<a.obj[f]?c(a.left,a):c(a.right,a)}var d=c(this.root,null),f,g;if(d===null){this.root=new a(b,0,null);return}f=new a(b,(d.dimension+1)%e.length,d),g=e[d.dimension],b[g]<d.obj[g]?d.left=f:d.right=f},this.remove=function(a){function c(b){if(b===null)return null;if(b.obj===a)return b;var d=e[b.dimension];return a[d]<b.obj[d]?c(b.left,b):c(b.right,b)}function d(a){function h(a,b){var c,d,f,g,i;return a===null?null:(c=e[b],a.dimension===b?a.right!==null?h(a.right,b):a:(d=a.obj[c],f=h(a.left,b),g=h(a.right,b),i=a,f!==null&&f.obj[c]>d&&(i=f),g!==null&&g.obj[c]>i.obj[c]&&(i=g),i))}function i(a,b){var c,d,f,g,h;return a===null?null:(c=e[b],a.dimension===b?a.left!==null?i(a.left,b):a:(d=a.obj[c],f=i(a.left,b),g=i(a.right,b),h=a,f!==null&&f.obj[c]<d&&(h=f),g!==null&&g.obj[c]<h.obj[c]&&(h=g),h))}var b,c,g;if(a.left===null&&a.right===null){if(a.parent===null){f.root=null;return}g=e[a.parent.dimension],a.obj[g]<a.parent.obj[g]?a.parent.left=null:a.parent.right=null;return}a.left!==null?b=h(a.left,a.dimension):b=i(a.right,a.dimension),c=b.obj,d(b),a.obj=c}var b;b=c(f.root);if(b===null)return;d(b)},this.nearest=function(a,b,g){function k(c){function o(a,c){j.push([a,c]),j.size()>b&&j.pop()}var f,g=e[c.dimension],h=d(a,c.obj),i={},l,m,n;for(n=0;n<e.length;n+=1)n===c.dimension?i[e[n]]=a[e[n]]:i[e[n]]=c.obj[e[n]];l=d(i,c.obj);if(c.right===null&&c.left===null){(j.size()<b||h<j.peek()[1])&&o(c,h);return}c.right===null?f=c.left:c.left===null?f=c.right:a[g]<c.obj[g]?f=c.left:f=c.right,k(f),(j.size()<b||h<j.peek()[1])&&o(c,h);if(j.size()<b||Math.abs(l)<j.peek()[1])f===c.left?m=c.right:m=c.left,m!==null&&k(m)}var h,i,j;j=new c(function(a){return-a[1]});if(g)for(h=0;h<b;h+=1)j.push([null,g]);k(f.root),i=[];for(h=0;h<b;h+=1)j.content[h][0]&&i.push([j.content[h][0].obj,j.content[h][1]]);return i},this.balanceFactor=function(){function a(b){return b===null?0:Math.max(a(b.left),a(b.right))+1}function b(a){return a===null?0:b(a.left)+b(a.right)+1}return a(f.root)/(Math.log(b(f.root))/Math.log(2))}}function c(a){this.content=[],this.scoreFunction=a}c.prototype={push:function(a){this.content.push(a),this.bubbleUp(this.content.length-1)},pop:function(){var a=this.content[0],b=this.content.pop();return this.content.length>0&&(this.content[0]=b,this.sinkDown(0)),a},peek:function(){return this.content[0]},remove:function(a){var b=this.content.length;for(var c=0;c<b;c++)if(this.content[c]==a){var d=this.content.pop();c!=b-1&&(this.content[c]=d,this.scoreFunction(d)<this.scoreFunction(a)?this.bubbleUp(c):this.sinkDown(c));return}throw new Error("Node not found.")},size:function(){return this.content.length},bubbleUp:function(a){var b=this.content[a];while(a>0){var c=Math.floor((a+1)/2)-1,d=this.content[c];if(!(this.scoreFunction(b)<this.scoreFunction(d)))break;this.content[c]=b,this.content[a]=d,a=c}},sinkDown:function(a){var b=this.content.length,c=this.content[a],d=this.scoreFunction(c);for(;;){var e=(a+1)*2,f=e-1,g=null;if(f<b){var h=this.content[f],i=this.scoreFunction(h);i<d&&(g=f)}if(e<b){var j=this.content[e],k=this.scoreFunction(j);k<(g==null?d:i)&&(g=e)}if(g==null)break;this.content[a]=this.content[g],this.content[g]=c,a=g}}},this.kdTree=b,typeof exports!="undefined"&&(exports.kdTree=b,exports.BinaryHeap=c)})();;
+var num = 0;
+self.onmessage = function( event ) {
+    var pts = [], x, y, z;
+    if (event.data.wm !== undefined) {
+        for (var i = 0, il = event.data.pos.length / 3; i < il; i++) {
+            x = event.data.pos[i*3+0] * 0.5 + event.data.wm[i*4+0]*0.5;
+            y = event.data.pos[i*3+1] * 0.5 + event.data.wm[i*4+1]*0.5;
+            z = event.data.pos[i*3+2] * 0.5 + event.data.wm[i*4+2]*0.5;
+            pts.push([x, y, z, i]);
+        }
+    } else {
+        for (var i = 0, il = event.data.pos.length; i < il; i+= 3) {
+            pts.push([event.data.pos[i], event.data.pos[i+1], event.data.pos[i+2], i/3]);
+        }
+    }
+
+    var dist = function (a, b) {
+        return (a[0]-b[0])*(a[0]-b[0]) + (a[1]-b[1])*(a[1]-b[1]) + (a[2]-b[2])*(a[2]-b[2]);
+    }
+    var kdt = new kdTree(pts, dist, [0, 1, 2]);
+
+    self.postMessage( {kdt:kdt.root, name:event.data.name} );
+    if (++num > 1) //close after two hemispheres
+        self.close();
+}
+</script>
+
+<script type="text/javascript" src="/static/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static/js/jquery.ui.js"></script>
+<script type="text/javascript" src="/static/js/ddslick.js"></script>
+<script type="text/javascript" src="/static/js/dat.gui.js"></script>
+<script type="text/javascript" src="/static/js/select2.js"></script>
+<script type="text/javascript" src="/static/js/three.js"></script>
+<script type="text/javascript" src="/static/js/oculus.js"></script>
+<script type="text/javascript" src="/static/js/lzma.js"></script>
+<script type="text/javascript" src="/static/js/CTM.js"></script>
+<script type="text/javascript" src="/static/js/CTMloader.js"></script>
+<script type="text/javascript" src="/static/js/SVGElement.js"></script>
+<script type="text/javascript" src="/static/js/parser.js"></script>
+<script type="text/javascript" src="/static/js/dataset.js"></script>
+<script type="text/javascript" src="/static/js/sliceplane.js"></script>
+<script type="text/javascript" src="/static/js/svgoverlay.js"></script>
+<script type="text/javascript" src="/static/js/shaderlib.js"></script>
+<script type="text/javascript" src="/static/js/jsplot.js"></script>
+<!-- missing jsplot2? -->
+<script type="text/javascript" src="/static/js/k-dtree.js"></script>
+<script type="text/javascript" src="/static/js/PickPosition.js"></script>
+<script type="text/javascript" src="/static/js/w2ui.js"></script>
+<script type="text/javascript" src="/static/js/jsplot-monkeypatch.js"></script>
+<!-- missing jsplot-monekeypatch2? -->
+<script type="text/javascript" src="/static/js/mriview.js"></script>
+<script type="text/javascript" src="/static/js/mriview-2.js"></script>
+<script type="text/javascript" src="/static/js/mriview-3.js"></script>
+<script type="text/javascript" src="/static/js/LeapJS.js"></script>
+<script type="text/javascript" src="/static/js/LeapControl.js"></script>
+
+<script type="text/html" id=mriview_html>
+<div id="main">
+  <div id="ctmload" class="loadmsg">Loading brain...</div>
+  <div id="dataopts" class="dataset-opts">
+    <div id="dataname" class="opt-header"/>
+    <div id="dataset_category" class="opt_category">
+    <ul id="datasets"></ul>
+  </div>
+</div>
+<div id="helpmenu" class="helpmenu"></div>
+<div id="picked_value">0.0000</div>
+<div id="mouseover_value">0.0000</div>
+<div id="colorlegend">
+<div id="vlims-1d">
+<div id="vmin-container">
+<input id="vmin-input"/>
+<div id="vmin"/></div>
+<div id="vmax-container">
+  <input id="vmax-input"/>
+  <div id="vmax"/></div>
+</div>
+<div id="vlims-2d">
+<div id="xd-vmin-container">
+  <input id="xd-vmin-input"/>
+  <div id="xd-vmin"/></div>
+  <div id="xd-vmax-container">
+  <input id="xd-vmax-input"/>
+  <div id="xd-vmax"/></div>
+  <div id="yd-vmin-container">
+  <input id="yd-vmin-input"/>
+  <div id="yd-vmin"/></div>
+  <div id="yd-vmax-container">
+  <input id="yd-vmax-input"/>
+  <div id="yd-vmax"/></div>
+</div>
+<div id="colorlegend-colors">
+  <select class="colorlegend-select">
+  <option value="Accent">Accent</option>
+  <option value="BPROG">BPROG</option>
+  <option value="BROYG">BROYG</option>
+  <option value="BROYG_2D">BROYG_2D</option>
+  <option value="Blues">Blues</option>
+  <option value="BrBG">BrBG</option>
+  <option value="BuBkRd">BuBkRd</option>
+  <option value="BuBkRd_alpha_2D">BuBkRd_alpha_2D</option>
+  <option value="BuGn">BuGn</option>
+  <option value="BuOr_2D">BuOr_2D</option>
+  <option value="BuPu">BuPu</option>
+  <option value="BuWtRd">BuWtRd</option>
+  <option value="BuWtRd_alpha">BuWtRd_alpha</option>
+  <option value="BuWtRd_black_2D">BuWtRd_black_2D</option>
+  <option value="CyanBlueGrayRedPink">CyanBlueGrayRedPink</option>
+  <option value="Dark2">Dark2</option>
+  <option value="GnBu">GnBu</option>
+  <option value="GreenWhiteBlue">GreenWhiteBlue</option>
+  <option value="GreenWhiteBlue_2D">GreenWhiteBlue_2D</option>
+  <option value="GreenWhiteRed">GreenWhiteRed</option>
+  <option value="GreenWhiteRed_2D">GreenWhiteRed_2D</option>
+  <option value="Greens">Greens</option>
+  <option value="Greys">Greys</option>
+  <option value="J4">J4</option>
+  <option value="J4R">J4R</option>
+  <option value="J4s">J4s</option>
+  <option value="J5">J5</option>
+  <option value="J5R">J5R</option>
+  <option value="J6">J6</option>
+  <option value="J6R">J6R</option>
+  <option value="OrRd">OrRd</option>
+  <option value="Oranges">Oranges</option>
+  <option value="PRGn">PRGn</option>
+  <option value="PU_BuOr_covar">PU_BuOr_covar</option>
+  <option value="PU_BuOr_covar_alpha">PU_BuOr_covar_alpha</option>
+  <option value="PU_PinkBlue_covar">PU_PinkBlue_covar</option>
+  <option value="PU_RdBu_covar">PU_RdBu_covar</option>
+  <option value="PU_RdBu_covar_alpha">PU_RdBu_covar_alpha</option>
+  <option value="PU_RdGn_covar">PU_RdGn_covar</option>
+  <option value="Paired">Paired</option>
+  <option value="Pastel1">Pastel1</option>
+  <option value="Pastel2">Pastel2</option>
+  <option value="PiYG">PiYG</option>
+  <option value="PuBu">PuBu</option>
+  <option value="PuBuGn">PuBuGn</option>
+  <option value="PuOr">PuOr</option>
+  <option value="PuRd">PuRd</option>
+  <option value="Purples">Purples</option>
+  <option value="RGrB_tsi">RGrB_tsi</option>
+  <option value="RdBu">RdBu</option>
+  <option value="RdBu_2D">RdBu_2D</option>
+  <option value="RdBu_covar">RdBu_covar</option>
+  <option value="RdBu_covar2">RdBu_covar2</option>
+  <option value="RdBu_covar_alpha">RdBu_covar_alpha</option>
+  <option value="RdBu_r_alpha">RdBu_r_alpha</option>
+  <option value="RdGn_covar">RdGn_covar</option>
+  <option value="RdGy">RdGy</option>
+  <option value="RdPu">RdPu</option>
+  <option value="RdYlBu">RdYlBu</option>
+  <option value="RdYlGn">RdYlGn</option>
+  <option value="Reds">Reds</option>
+  <option value="Reds_cov">Reds_cov</option>
+  <option value="Retinotopy_RYBCR">Retinotopy_RYBCR</option>
+  <option value="Retinotopy_RYBCR_2D">Retinotopy_RYBCR_2D</option>
+  <option value="Retinotopy_RYBCR_alpha">Retinotopy_RYBCR_alpha</option>
+  <option value="Set1">Set1</option>
+  <option value="Set2">Set2</option>
+  <option value="Set3">Set3</option>
+  <option value="YlGn">YlGn</option>
+  <option value="YlGnBu">YlGnBu</option>
+  <option value="YlOrBr">YlOrBr</option>
+  <option value="YlOrRd">YlOrRd</option>
+  <option value="afmhot">afmhot</option>
+  <option value="autumn">autumn</option>
+  <option value="autumn_alpha">autumn_alpha</option>
+  <option value="autumn_blkmin">autumn_blkmin</option>
+  <option value="autumn_blkmin_alpha_2D">autumn_blkmin_alpha_2D</option>
+  <option value="autumnblack">autumnblack</option>
+  <option value="autumnblack_alpha_2D">autumnblack_alpha_2D</option>
+  <option value="binary">binary</option>
+  <option value="bone">bone</option>
+  <option value="brg">brg</option>
+  <option value="bwr">bwr</option>
+  <option value="cool">cool</option>
+  <option value="coolwarm">coolwarm</option>
+  <option value="copper">copper</option>
+  <option value="cubehelix">cubehelix</option>
+  <option value="fire">fire</option>
+  <option value="fire_alpha">fire_alpha</option>
+  <option value="flag">flag</option>
+  <option value="freesurfer_aseg_256">freesurfer_aseg_256</option>
+  <option value="gist_earth">gist_earth</option>
+  <option value="gist_gray">gist_gray</option>
+  <option value="gist_heat">gist_heat</option>
+  <option value="gist_ncar">gist_ncar</option>
+  <option value="gist_rainbow">gist_rainbow</option>
+  <option value="gist_stern">gist_stern</option>
+  <option value="gist_yarg">gist_yarg</option>
+  <option value="gnuplot">gnuplot</option>
+  <option value="gnuplot2">gnuplot2</option>
+  <option value="gray">gray</option>
+  <option value="hot">hot</option>
+  <option value="hot_alpha">hot_alpha</option>
+  <option value="hsv">hsv</option>
+  <option value="inferno">inferno</option>
+  <option value="jet">jet</option>
+  <option value="magma">magma</option>
+  <option value="nipy_spectral">nipy_spectral</option>
+  <option value="ocean">ocean</option>
+  <option value="pink">pink</option>
+  <option value="plasma">plasma</option>
+  <option value="plasma_alpha">plasma_alpha</option>
+  <option value="prism">prism</option>
+  <option value="rainbow">rainbow</option>
+  <option value="seismic">seismic</option>
+  <option value="spectral">spectral</option>
+  <option value="spring">spring</option>
+  <option value="summer">summer</option>
+  <option value="terrain">terrain</option>
+  <option value="viridis">viridis</option>
+  <option value="winter">winter</option>
+</select>
+<div id="colorlegend-colorbar-container">
+  <img id="colorlegend-colorbar" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAABCAYAAAAxWXB3AAAA00lEQVR4nJWSTbLCMAyDPysD1+Z8
+  XInW9lvUNGlaYN4iox9LWsUez0daCqVQNozOlSrdyhPGwLOhIW+p0tVNIQY+5L91jUQEskAEVijz
+  SY93RxbY4Hftkz73rnffvQQDZKDC/2jrvu36d/ab9jBeq7GsbLgUrsZrpXC7j/yI5+x8/5hdjtlw
+  uHly8yj8wCO5/8q8ecz+dfZ+mU1Svr9oTirI5oScbJO/cz9kojqpD715b+dx2gslQSMQbqJ+X+nW
+  9Xiz1jN123Qb+Lh33O+8Tf1t+w+IvEJCKjxhngAAAABJRU5ErkJggg=="/>
+</div>
+</div>
+</div>
+
+
+<canvas id="brain">
+  <div id="colormaps">
+    <!-- <div class="cmap" id="Accent" style="display:none;"><img src="/static/cmaps/Accent.png"/></div>
+    <div class="cmap" id="Accent_r" style="display:none;"><img src="/static/cmaps/Accent_r.png"/></div>
+    <div class="cmap" id="BPROG" style="display:none;"><img src="/static/cmaps/BPROG.png"/></div>
+    <div class="cmap" id="BROYG" style="display:none;"><img src="/static/cmaps/BROYG.png"/></div>
+    <div class="cmap" id="BROYG_2D" style="display:none;"><img src="/static/cmaps/BROYG_2D.png"/></div>
+    <div class="cmap" id="Blues" style="display:none;"><img src="/static/cmaps/Blues.png"/></div>
+    <div class="cmap" id="Blues_r" style="display:none;"><img src="/static/cmaps/Blues_r.png"/></div>
+    <div class="cmap" id="BrBG" style="display:none;"><img src="/static/cmaps/BrBG.png"/></div>
+    <div class="cmap" id="BrBG_r" style="display:none;"><img src="/static/cmaps/BrBG_r.png"/></div>
+    <div class="cmap" id="BuBkRd" style="display:none;"><img src="/static/cmaps/BuBkRd.png"/></div>
+    <div class="cmap" id="BuBkRd_alpha_2D" style="display:none;"><img src="/static/cmaps/BuBkRd_alpha_2D.png"/></div>
+    <div class="cmap" id="BuGn" style="display:none;"><img src="/static/cmaps/BuGn.png"/></div>
+    <div class="cmap" id="BuGn_r" style="display:none;"><img src="/static/cmaps/BuGn_r.png"/></div>
+    <div class="cmap" id="BuOr_2D" style="display:none;"><img src="/static/cmaps/BuOr_2D.png"/></div>
+    <div class="cmap" id="BuPu" style="display:none;"><img src="/static/cmaps/BuPu.png"/></div>
+    <div class="cmap" id="BuPu_r" style="display:none;"><img src="/static/cmaps/BuPu_r.png"/></div>
+    <div class="cmap" id="BuWtRd" style="display:none;"><img src="/static/cmaps/BuWtRd.png"/></div>
+    <div class="cmap" id="BuWtRd_alpha" style="display:none;"><img src="/static/cmaps/BuWtRd_alpha.png"/></div>
+    <div class="cmap" id="BuWtRd_black_2D" style="display:none;"><img src="/static/cmaps/BuWtRd_black_2D.png"/></div>
+    <div class="cmap" id="CyanBlueGrayRedPink" style="display:none;"><img src="/static/cmaps/CyanBlueGrayRedPink.png"/></div>
+    <div class="cmap" id="Dark2" style="display:none;"><img src="/static/cmaps/Dark2.png"/></div>
+    <div class="cmap" id="Dark2_r" style="display:none;"><img src="/static/cmaps/Dark2_r.png"/></div>
+    <div class="cmap" id="GnBu" style="display:none;"><img src="/static/cmaps/GnBu.png"/></div>
+    <div class="cmap" id="GnBu_r" style="display:none;"><img src="/static/cmaps/GnBu_r.png"/></div>
+    <div class="cmap" id="GreenWhiteBlue" style="display:none;"><img src="/static/cmaps/GreenWhiteBlue.png"/></div>
+    <div class="cmap" id="GreenWhiteBlue_2D" style="display:none;"><img src="/static/cmaps/GreenWhiteBlue_2D.png"/></div>
+    <div class="cmap" id="GreenWhiteRed" style="display:none;"><img src="/static/cmaps/GreenWhiteRed.png"/></div>
+    <div class="cmap" id="GreenWhiteRed_2D" style="display:none;"><img src="/static/cmaps/GreenWhiteRed_2D.png"/></div>
+    <div class="cmap" id="Greens" style="display:none;"><img src="/static/cmaps/Greens.png"/></div>
+    <div class="cmap" id="Greens_r" style="display:none;"><img src="/static/cmaps/Greens_r.png"/></div>
+    <div class="cmap" id="Greys" style="display:none;"><img src="/static/cmaps/Greys.png"/></div>
+    <div class="cmap" id="Greys_r" style="display:none;"><img src="/static/cmaps/Greys_r.png"/></div>
+    <div class="cmap" id="J4" style="display:none;"><img src="/static/cmaps/J4.png"/></div>
+    <div class="cmap" id="J4R" style="display:none;"><img src="/static/cmaps/J4R.png"/></div>
+    <div class="cmap" id="J4s" style="display:none;"><img src="/static/cmaps/J4s.png"/></div>
+    <div class="cmap" id="J5" style="display:none;"><img src="/static/cmaps/J5.png"/></div>
+    <div class="cmap" id="J5R" style="display:none;"><img src="/static/cmaps/J5R.png"/></div>
+    <div class="cmap" id="J6" style="display:none;"><img src="/static/cmaps/J6.png"/></div>
+    <div class="cmap" id="J6R" style="display:none;"><img src="/static/cmaps/J6R.png"/></div>
+    <div class="cmap" id="OrRd" style="display:none;"><img src="/static/cmaps/OrRd.png"/></div>
+    <div class="cmap" id="OrRd_r" style="display:none;"><img src="/static/cmaps/OrRd_r.png"/></div>
+    <div class="cmap" id="Oranges" style="display:none;"><img src="/static/cmaps/Oranges.png"/></div>
+    <div class="cmap" id="Oranges_r" style="display:none;"><img src="/static/cmaps/Oranges_r.png"/></div>
+    <div class="cmap" id="PRGn" style="display:none;"><img src="/static/cmaps/PRGn.png"/></div>
+    <div class="cmap" id="PRGn_r" style="display:none;"><img src="/static/cmaps/PRGn_r.png"/></div>
+    <div class="cmap" id="PU_BuOr_covar" style="display:none;"><img src="/static/cmaps/PU_BuOr_covar.png"/></div>
+    <div class="cmap" id="PU_BuOr_covar_alpha" style="display:none;"><img src="/static/cmaps/PU_BuOr_covar_alpha.png"/></div>
+    <div class="cmap" id="PU_PinkBlue_covar" style="display:none;"><img src="/static/cmaps/PU_PinkBlue_covar.png"/></div>
+    <div class="cmap" id="PU_RdBu_covar" style="display:none;"><img src="/static/cmaps/PU_RdBu_covar.png"/></div>
+    <div class="cmap" id="PU_RdBu_covar_alpha" style="display:none;"><img src="/static/cmaps/PU_RdBu_covar_alpha.png"/></div>
+    <div class="cmap" id="PU_RdGn_covar" style="display:none;"><img src="/static/cmaps/PU_RdGn_covar.png"/></div>
+    <div class="cmap" id="Paired" style="display:none;"><img src="/static/cmaps/Paired.png"/></div>
+    <div class="cmap" id="Paired_r" style="display:none;"><img src="/static/cmaps/Paired_r.png"/></div>
+    <div class="cmap" id="Pastel1" style="display:none;"><img src="/static/cmaps/Pastel1.png"/></div>
+    <div class="cmap" id="Pastel1_r" style="display:none;"><img src="/static/cmaps/Pastel1_r.png"/></div>
+    <div class="cmap" id="Pastel2" style="display:none;"><img src="/static/cmaps/Pastel2.png"/></div>
+    <div class="cmap" id="Pastel2_r" style="display:none;"><img src="/static/cmaps/Pastel2_r.png"/></div>
+    <div class="cmap" id="PiYG" style="display:none;"><img src="/static/cmaps/PiYG.png"/></div>
+    <div class="cmap" id="PiYG_r" style="display:none;"><img src="/static/cmaps/PiYG_r.png"/></div>
+    <div class="cmap" id="PuBu" style="display:none;"><img src="/static/cmaps/PuBu.png"/></div>
+    <div class="cmap" id="PuBuGn" style="display:none;"><img src="/static/cmaps/PuBuGn.png"/></div>
+    <div class="cmap" id="PuBuGn_r" style="display:none;"><img src="/static/cmaps/PuBuGn_r.png"/></div>
+    <div class="cmap" id="PuBu_r" style="display:none;"><img src="/static/cmaps/PuBu_r.png"/></div>
+    <div class="cmap" id="PuOr" style="display:none;"><img src="/static/cmaps/PuOr.png"/></div>
+    <div class="cmap" id="PuOr_r" style="display:none;"><img src="/static/cmaps/PuOr_r.png"/></div>
+    <div class="cmap" id="PuRd" style="display:none;"><img src="/static/cmaps/PuRd.png"/></div>
+    <div class="cmap" id="PuRd_r" style="display:none;"><img src="/static/cmaps/PuRd_r.png"/></div>
+    <div class="cmap" id="Purples" style="display:none;"><img src="/static/cmaps/Purples.png"/></div>
+    <div class="cmap" id="Purples_r" style="display:none;"><img src="/static/cmaps/Purples_r.png"/></div> -->
+    <div class="cmap" id="RGrB_tsi" style="display:none;"><img src="/static/cmaps/RGrB_tsi.png"/></div>
+    <div class="cmap" id="RdBu" style="display:none;"><img src="/static/cmaps/RdBu.png"/></div>
+    <div class="cmap" id="RdBu_2D" style="display:none;"><img src="/static/cmaps/RdBu_2D.png"/></div>
+    <div class="cmap" id="RdBu_2D_r" style="display:none;"><img src="/static/cmaps/RdBu_2D_r.png"/></div>
+    <div class="cmap" id="RdBu_covar" style="display:none;"><img src="/static/cmaps/RdBu_covar.png"/></div>
+    <div class="cmap" id="RdBu_covar2" style="display:none;"><img src="/static/cmaps/RdBu_covar2.png"/></div>
+    <div class="cmap" id="RdBu_covar_alpha" style="display:none;"><img src="/static/cmaps/RdBu_covar_alpha.png"/></div>
+    <div class="cmap" id="RdBu_r"><img src="/static/cmaps/RdBu_r.png"/></div>
+    <div class="cmap" id="RdBu_r_alpha" style="display:none;"><img src="/static/cmaps/RdBu_r_alpha.png"/></div>
+    <div class="cmap" id="RdGn_covar" style="display:none;"><img src="/static/cmaps/RdGn_covar.png"/></div>
+    <div class="cmap" id="RdGy" style="display:none;"><img src="/static/cmaps/RdGy.png"/></div>
+    <div class="cmap" id="RdGy_r" style="display:none;"><img src="/static/cmaps/RdGy_r.png"/></div>
+    <div class="cmap" id="RdPu" style="display:none;"><img src="/static/cmaps/RdPu.png"/></div>
+    <div class="cmap" id="RdPu_r" style="display:none;"><img src="/static/cmaps/RdPu_r.png"/></div>
+    <div class="cmap" id="RdYlBu" style="display:none;"><img src="/static/cmaps/RdYlBu.png"/></div>
+    <div class="cmap" id="RdYlBu_r" style="display:none;"><img src="/static/cmaps/RdYlBu_r.png"/></div>
+    <div class="cmap" id="RdYlGn" style="display:none;"><img src="/static/cmaps/RdYlGn.png"/></div>
+    <div class="cmap" id="RdYlGn_r" style="display:none;"><img src="/static/cmaps/RdYlGn_r.png"/></div>
+    <!-- <div class="cmap" id="Reds" style="display:none;"><img src="/static/cmaps/Reds.png"/></div>
+    <div class="cmap" id="Reds_cov" style="display:none;"><img src="/static/cmaps/Reds_cov.png"/></div>
+    <div class="cmap" id="Reds_r" style="display:none;"><img src="/static/cmaps/Reds_r.png"/></div>
+    <div class="cmap" id="Retinotopy_RYBCR" style="display:none;"><img src="/static/cmaps/Retinotopy_RYBCR.png"/></div>
+    <div class="cmap" id="Retinotopy_RYBCR_2D" style="display:none;"><img src="/static/cmaps/Retinotopy_RYBCR_2D.png"/></div>
+    <div class="cmap" id="Retinotopy_RYBCR_alpha" style="display:none;"><img src="/static/cmaps/Retinotopy_RYBCR_alpha.png"/></div>
+    <div class="cmap" id="Set1" style="display:none;"><img src="/static/cmaps/Set1.png"/></div>
+    <div class="cmap" id="Set1_r" style="display:none;"><img src="/static/cmaps/Set1_r.png"/></div>
+    <div class="cmap" id="Set2" style="display:none;"><img src="/static/cmaps/Set2.png"/></div>
+    <div class="cmap" id="Set2_r" style="display:none;"><img src="/static/cmaps/Set2_r.png"/></div>
+    <div class="cmap" id="Set3" style="display:none;"><img src="/static/cmaps/Set3.png"/></div>
+    <div class="cmap" id="Set3_r" style="display:none;"><img src="/static/cmaps/Set3_r.png"/></div>
+    <div class="cmap" id="YlGn" style="display:none;"><img src="/static/cmaps/YlGn.png"/></div>
+    <div class="cmap" id="YlGnBu" style="display:none;"><img src="/static/cmaps/YlGnBu.png"/></div>
+    <div class="cmap" id="YlGnBu_r" style="display:none;"><img src="/static/cmaps/YlGnBu_r.png"/></div>
+    <div class="cmap" id="YlGn_r" style="display:none;"><img src="/static/cmaps/YlGn_r.png"/></div>
+    <div class="cmap" id="YlOrBr" style="display:none;"><img src="/static/cmaps/YlOrBr.png"/></div>
+    <div class="cmap" id="YlOrBr_r" style="display:none;"><img src="/static/cmaps/YlOrBr_r.png"/></div>
+    <div class="cmap" id="YlOrRd" style="display:none;"><img src="/static/cmaps/YlOrRd.png"/></div>
+    <div class="cmap" id="YlOrRd_r" style="display:none;"><img src="/static/cmaps/YlOrRd_r.png"/></div>
+    <div class="cmap" id="afmhot" style="display:none;"><img src="/static/cmaps/afmhot.png"/></div>
+    <div class="cmap" id="afmhot_r" style="display:none;"><img src="/static/cmaps/afmhot_r.png"/></div>
+    <div class="cmap" id="autumn" style="display:none;"><img src="/static/cmaps/autumn.png"/></div>
+    <div class="cmap" id="autumn_alpha" style="display:none;"><img src="/static/cmaps/autumn_alpha.png"/></div>
+    <div class="cmap" id="autumn_blkmin" style="display:none;"><img src="/static/cmaps/autumn_blkmin.png"/></div>
+    <div class="cmap" id="autumn_blkmin_alpha_2D" style="display:none;"><img src="/static/cmaps/autumn_blkmin_alpha_2D.png"/></div>
+    <div class="cmap" id="autumn_r" style="display:none;"><img src="/static/cmaps/autumn_r.png"/></div>
+    <div class="cmap" id="autumnblack" style="display:none;"><img src="/static/cmaps/autumnblack.png"/></div>
+    <div class="cmap" id="autumnblack_alpha_2D" style="display:none;"><img src="/static/cmaps/autumnblack_alpha_2D.png"/></div>
+    <div class="cmap" id="binary" style="display:none;"><img src="/static/cmaps/binary.png"/></div>
+    <div class="cmap" id="binary_r" style="display:none;"><img src="/static/cmaps/binary_r.png"/></div>
+    <div class="cmap" id="bone" style="display:none;"><img src="/static/cmaps/bone.png"/></div>
+    <div class="cmap" id="bone_r" style="display:none;"><img src="/static/cmaps/bone_r.png"/></div>
+    <div class="cmap" id="brg" style="display:none;"><img src="/static/cmaps/brg.png"/></div>
+    <div class="cmap" id="brg_r" style="display:none;"><img src="/static/cmaps/brg_r.png"/></div>
+    <div class="cmap" id="bwr" style="display:none;"><img src="/static/cmaps/bwr.png"/></div>
+    <div class="cmap" id="bwr_r" style="display:none;"><img src="/static/cmaps/bwr_r.png"/></div>
+    <div class="cmap" id="cool" style="display:none;"><img src="/static/cmaps/cool.png"/></div>
+    <div class="cmap" id="cool_r" style="display:none;"><img src="/static/cmaps/cool_r.png"/></div>
+    <div class="cmap" id="coolwarm" style="display:none;"><img src="/static/cmaps/coolwarm.png"/></div>
+    <div class="cmap" id="coolwarm_r" style="display:none;"><img src="/static/cmaps/coolwarm_r.png"/></div>
+    <div class="cmap" id="copper" style="display:none;"><img src="/static/cmaps/copper.png"/></div>
+    <div class="cmap" id="copper_r" style="display:none;"><img src="/static/cmaps/copper_r.png"/></div>
+    <div class="cmap" id="cubehelix" style="display:none;"><img src="/static/cmaps/cubehelix.png"/></div>
+    <div class="cmap" id="cubehelix_r" style="display:none;"><img src="/static/cmaps/cubehelix_r.png"/></div>
+    <div class="cmap" id="fire" style="display:none;"><img src="/static/cmaps/fire.png"/></div>
+    <div class="cmap" id="fire_alpha" style="display:none;"><img src="/static/cmaps/fire_alpha.png"/></div>
+    <div class="cmap" id="flag" style="display:none;"><img src="/static/cmaps/flag.png"/></div>
+    <div class="cmap" id="flag_r" style="display:none;"><img src="/static/cmaps/flag_r.png"/></div>
+    <div class="cmap" id="freesurfer_aseg_256" style="display:none;"><img src="/static/cmaps/freesurfer_aseg_256.png"/></div>
+    <div class="cmap" id="gist_earth" style="display:none;"><img src="/static/cmaps/gist_earth.png"/></div>
+    <div class="cmap" id="gist_earth_r" style="display:none;"><img src="/static/cmaps/gist_earth_r.png"/></div>
+    <div class="cmap" id="gist_gray" style="display:none;"><img src="/static/cmaps/gist_gray.png"/></div>
+    <div class="cmap" id="gist_gray_r" style="display:none;"><img src="/static/cmaps/gist_gray_r.png"/></div>
+    <div class="cmap" id="gist_heat" style="display:none;"><img src="/static/cmaps/gist_heat.png"/></div>
+    <div class="cmap" id="gist_heat_r" style="display:none;"><img src="/static/cmaps/gist_heat_r.png"/></div>
+    <div class="cmap" id="gist_ncar" style="display:none;"><img src="/static/cmaps/gist_ncar.png"/></div>
+    <div class="cmap" id="gist_ncar_r" style="display:none;"><img src="/static/cmaps/gist_ncar_r.png"/></div>
+    <div class="cmap" id="gist_rainbow" style="display:none;"><img src="/static/cmaps/gist_rainbow.png"/></div>
+    <div class="cmap" id="gist_rainbow_r" style="display:none;"><img src="/static/cmaps/gist_rainbow_r.png"/></div>
+    <div class="cmap" id="gist_stern" style="display:none;"><img src="/static/cmaps/gist_stern.png"/></div>
+    <div class="cmap" id="gist_stern_r" style="display:none;"><img src="/static/cmaps/gist_stern_r.png"/></div>
+    <div class="cmap" id="gist_yarg" style="display:none;"><img src="/static/cmaps/gist_yarg.png"/></div>
+    <div class="cmap" id="gist_yarg_r" style="display:none;"><img src="/static/cmaps/gist_yarg_r.png"/></div>
+    <div class="cmap" id="gnuplot" style="display:none;"><img src="/static/cmaps/gnuplot.png"/></div>
+    <div class="cmap" id="gnuplot2" style="display:none;"><img src="/static/cmaps/gnuplot2.png"/></div>
+    <div class="cmap" id="gnuplot2_r" style="display:none;"><img src="/static/cmaps/gnuplot2_r.png"/></div>
+    <div class="cmap" id="gnuplot_r" style="display:none;"><img src="/static/cmaps/gnuplot_r.png"/></div>
+    <div class="cmap" id="gray" style="display:none;"><img src="/static/cmaps/gray.png"/></div>
+    <div class="cmap" id="gray_r" style="display:none;"><img src="/static/cmaps/gray_r.png"/></div>
+    <div class="cmap" id="hot" style="display:none;"><img src="/static/cmaps/hot.png"/></div>
+    <div class="cmap" id="hot_alpha" style="display:none;"><img src="/static/cmaps/hot_alpha.png"/></div>
+    <div class="cmap" id="hot_r" style="display:none;"><img src="/static/cmaps/hot_r.png"/></div>
+    <div class="cmap" id="hsv" style="display:none;"><img src="/static/cmaps/hsv.png"/></div>
+    <div class="cmap" id="hsv_r" style="display:none;"><img src="/static/cmaps/hsv_r.png"/></div>
+    <div class="cmap" id="inferno" style="display:none;"><img src="/static/cmaps/inferno.png"/></div>
+    <div class="cmap" id="inferno_r" style="display:none;"><img src="/static/cmaps/inferno_r.png"/></div>
+    <div class="cmap" id="jet" style="display:none;"><img src="/static/cmaps/jet.png"/></div>
+    <div class="cmap" id="jet_r" style="display:none;"><img src="/static/cmaps/jet_r.png"/></div>
+    <div class="cmap" id="magma" style="display:none;"><img src="/static/cmaps/magma.png"/></div>
+    <div class="cmap" id="magma_r" style="display:none;"><img src="/static/cmaps/magma_r.png"/></div>
+    <div class="cmap" id="nipy_spectral" style="display:none;"><img src="/static/cmaps/nipy_spectral.png"/></div>
+    <div class="cmap" id="nipy_spectral_r" style="display:none;"><img src="/static/cmaps/nipy_spectral_r.png"/></div>
+    <div class="cmap" id="ocean" style="display:none;"><img src="/static/cmaps/ocean.png"/></div>
+    <div class="cmap" id="ocean_r" style="display:none;"><img src="/static/cmaps/ocean_r.png"/></div>
+    <div class="cmap" id="pink" style="display:none;"><img src="/static/cmaps/pink.png"/></div>
+    <div class="cmap" id="pink_r" style="display:none;"><img src="/static/cmaps/pink_r.png"/></div>
+    <div class="cmap" id="plasma" style="display:none;"><img src="/static/cmaps/plasma.png"/></div>
+    <div class="cmap" id="plasma_alpha" style="display:none;"><img src="/static/cmaps/plasma_alpha.png"/></div>
+    <div class="cmap" id="plasma_r" style="display:none;"><img src="/static/cmaps/plasma_r.png"/></div>
+    <div class="cmap" id="prism" style="display:none;"><img src="/static/cmaps/prism.png"/></div>
+    <div class="cmap" id="prism_r" style="display:none;"><img src="/static/cmaps/prism_r.png"/></div>
+    <div class="cmap" id="rainbow" style="display:none;"><img src="/static/cmaps/rainbow.png"/></div>
+    <div class="cmap" id="rainbow_r" style="display:none;"><img src="/static/cmaps/rainbow_r.png"/></div>
+    <div class="cmap" id="seismic" style="display:none;"><img src="/static/cmaps/seismic.png"/></div>
+    <div class="cmap" id="seismic_r" style="display:none;"><img src="/static/cmaps/seismic_r.png"/></div>
+    <div class="cmap" id="spectral" style="display:none;"><img src="/static/cmaps/spectral.png"/></div>
+    <div class="cmap" id="spectral_r" style="display:none;"><img src="/static/cmaps/spectral_r.png"/></div>
+    <div class="cmap" id="spring" style="display:none;"><img src="/static/cmaps/spring.png"/></div>
+    <div class="cmap" id="spring_r" style="display:none;"><img src="/static/cmaps/spring_r.png"/></div>
+    <div class="cmap" id="summer" style="display:none;"><img src="/static/cmaps/summer.png"/></div>
+    <div class="cmap" id="summer_r" style="display:none;"><img src="/static/cmaps/summer_r.png"/></div>
+    <div class="cmap" id="terrain" style="display:none;"><img src="/static/cmaps/terrain.png"/></div>
+    <div class="cmap" id="terrain_r" style="display:none;"><img src="/static/cmaps/terrain_r.png"/></div>
+    <div class="cmap" id="viridis" style="display:none;"><img src="/static/cmaps/viridis.png"/></div>
+    <div class="cmap" id="viridis_r" style="display:none;"><img src="/static/cmaps/viridis_r.png"/></div>
+    <div class="cmap" id="winter" style="display:none;"><img src="/static/cmaps/winter.png"/></div>
+    <div class="cmap" id="winter_r" style="display:none;"><img src="/static/cmaps/winter_r.png"/></div> -->
+</div>
+</div>
+</script>
+
+<script type="text/html" id="movieaxes_html">
+    <div class="movie_wrapper">
+        <div class="movie_cell">
+            <div class="movie_load loadmsg">
+                Loading...
+            </div>
+            <video class="movie" preload="" loop="loop">
+                <source/>
+            </video>
+        </div>
+    </div>
+</script>
+
+<script type="text/javascript">
+	var validator = new function () {
+		var gl;
+		this.webgl = false;
+		try {
+			if (window.WebGLRenderingContext) {
+				gl = document.createElement("canvas").getContext('experimental-webgl');
+				this.webgl = !!gl;
+			}
+		} catch (e) { }
+		this.vtex = function (vtmin, atmin) {
+			var vtex = gl.getParameter(gl.MAX_VERTEX_TEXTURE_IMAGE_UNITS);
+			var atex = gl.getParameter(gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS);
+			if (vtex >= vtmin && atex >= atmin)
+				return true;
+			return false;
+		}
+		this.vattr = function (vmin) {
+			return gl.getParameter(gl.MAX_VERTEX_ATTRIBS) >= vmin;
+		}
+	};
+
+	var viewer, subjects, datasets, figure, sock, viewopts;
+	var colormaps = {};
+	$(document).ready(function () {
+		if (!validator.webgl) {
+			$(".loadmsg").hide();
+			$("#ctmload").html("<p>Sorry, it seems you have no <a href='http://get.webgl.org'>WebGL support.</a> :(</p><p>If you are using Chrome, try <a href='http://peter.sh/experiments/chromium-command-line-switches/#ignore-gpu-blacklist'>ignoring the GPU blacklist.</a></p>").show();
+		} else if (!validator.vtex(3, 5)) {
+			$(".loadmsg").hide();
+			$("#ctmload").html("<p>Sorry, your computer does not have the minimum number of texture units :(</p><p>Try upgrading your drivers and/or your browser</p>").show();
+		} else {
+			viewopts = { "voxlines": "false", "voxline_color": "#FFFFFF", "voxline_width": "0.01", "specularity": "1.0", "overlayscale": "1", "anim_speed": "2", "bumpy_flatmap": "false", "overlays_visible": ["sulci"], "labels_visible": [], "brightness": "0.5", "contrast": "0.25", "smoothness": "0.0", "dependency_paths": { "inkscape": "inkscape", "blender": "blender", "slim": "None", "meshlab": "None" }, "paths_default": { "stroke": "white", "fill": "none", "display": "inline", "filter": "url(#dropshadow)", "stroke-width": "3", "stroke-opacity": "1", "fill-opacity": "0", "stroke-dashoffset": "None", "stroke-dasharray": "None" }, "labels_default": { "font-family": "Helvetica, sans-serif", "font-size": "18pt", "font-weight": "bold", "font-style": "italic", "fill": "white", "fill-opacity": "1", "text-anchor": "middle", "filter": "url(#dropshadow)" }, "overlay_paths": { "stroke": "white", "fill": "none", "display": "inline", "filter": "url(#dropshadow)", "stroke-width": "2", "stroke-opacity": "1", "fill-opacity": "0", "stroke-dashoffset": "None", "stroke-dasharray": "None" }, "rois_paths": { "stroke": "white", "fill": "none", "display": "inline", "filter": "url(#dropshadow)", "stroke-width": "2", "stroke-opacity": "1", "fill-opacity": "0", "stroke-dashoffset": "None", "stroke-dasharray": "None" }, "rois_labels": { "font-family": "Helvetica, sans-serif", "font-size": "14pt", "font-weight": "bold", "font-style": "italic", "fill": "white", "fill-opacity": "1", "text-anchor": "middle", "filter": "url(#dropshadow)" }, "sulci_paths": { "stroke": "white", "fill": "none", "display": "inline", "filter": "url(#dropshadow)", "stroke-width": "6", "stroke-opacity": "0.6", "fill-opacity": "0", "stroke-dashoffset": "None", "stroke-dasharray": "None", "stroke-linecap": "round" }, "sulci_labels": { "font-family": "Helvetica, sans-serif", "font-size": "16pt", "font-weight": "", "font-style": "", "fill": "white", "fill-opacity": "1", "text-anchor": "middle", "filter": "url(#dropshadow)" } };
+			subjects = { "fsaverage": "/static/fsaverage_[inflated]_mg2_9_v3.json" };
+      for (var name in subjects) {
+          subjects[name] = new mriview.Surface(subjects[name]);
+      }
+      figure = new jsplot.W2Figure();
+      viewer = figure.add(mriview.Viewer, "main", true);
+
+      // // Load and parse JSON from file
+      // fetch('data/data.json')
+      //     .then(response => response.json())
+      //     .then(jsonData => {
+      //         dataviews = dataset.fromJSON(jsonData);
+      //         viewer.addData(dataviews);
+      //     })
+      //     .catch(error => console.error('Error loading JSON:', error));
+      dataviews = dataset.fromJSON({
+         "views": [{ "data": ["__e506186d71676e98"], "state": null, "attrs": { "priority": 1 }, "desc": "", "cmap": ["RdBu_r"], "vmin": [0.0], "vmax": [1.0], "name": "neurovlm" }],
+         "data": { "__e506186d71676e98": { "split": 163842, "frames": 1, "name": "__e506186d71676e98", "subject": "fsaverage", "min": 0.0, "max": 1.0, "raw": false } },
+         "images": { "__e506186d71676e98": ["/static/data/__e506186d71676e98_0.png"] }
+        });
+      viewer.addData(dataviews);
+	}});
+</script>
+
+<style>
+  #rhs {
+    height: 100%;
+    width: 40%;
+    background-color: #131314;
+    position: absolute; /* Allows precise positioning */
+    right: 0; /* Align to the right edge */
+    top: 0; /* Optional: Align to the top edge */
+  }
+
+  /* Query box */
+  #query_box {
+    position: absolute;
+    bottom: 20px;
+    height: 60px;
+    width: 100%;
+  }
+
+  /* Input container */
+  .input-container {
+    position: relative;
+    bottom: 75%;
+    left: 5%;
+    width: 90%;
+    padding: 10px;
+    background-color: rgb(30, 31, 32);
+    border: 2px solid rgb(30, 31, 32);
+    border-radius: 10px;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    height: 120%
+  }
+
+  /* Textarea styles */
+  .text-input {
+    width: 100%;
+    min-height: 50px;
+    padding: 10px;
+    font-size: 16px;
+    box-sizing: border-box;
+    resize: none;
+    overflow: hidden;
+    background-color: rgb(30, 31, 32);
+    color: rgb(227, 227, 227);
+    border: 0px;
+  }
+  #reponse_box {
+    position: absolute;
+    top: 4%;
+    height: 73%;
+    width: 95%;
+  }
+  #output_container{
+    width: 93%;
+    height: 100%;
+    display: flex;
+    left: 5%;
+    position: relative;
+    overflow-y: auto;
+    font-size: 18px;
+    text-align: left;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+    text-indent: -30px;
+    padding-left: 30px;
+  }
+  .article a {
+    text-decoration: none; /* Optional: Removes underline from links */
+    color: blue; /* Optional: Styles the links */
+  }
+
+  .toggle-container {
+    display: flex;
+    position: absolute;
+    z-index: 200;
+    float: left;
+    width: 200px;
+    top: 35px;
+    left: 280px;
+    border: 2px solid #555;
+    border-radius: 20px;
+    overflow: hidden;
+    background-color: #222;
+  }
+
+  .toggle-option {
+    flex: 1;
+    padding: 10px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+    color: #ccc;
+  }
+
+  .toggle-option.active {
+    background-color: #007BFF;
+    color: #fff;
+  }
+
+  .toggle-option:not(.active) {
+    background-color: #333;
+    color: #bbb;
+  }
+  .visible {
+    display: block !important;
+  }
+  .hidden {
+    display: none !important;
+  }
+
+  #gl1 {
+    /* display: none !important; */
+    width: 80% !important;
+    height: 80% !important;
+    top: 150px;
+    left: 150px;
+    position: relative;
+    z-index: 10000;
+  }
+  #alphaSlider {
+    display: none;
+    position: absolute;
+    z-index: 200;
+    float: left;
+    width: 200px;
+    top: 35px;
+    left: 500px;
+  }
+  #dataopts-vol{
+    position: absolute;
+    z-index: 8;
+    float: left;
+    padding: 15px;
+    margin: 20px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, .2);
+    max-width: 400px;
+  }
+</style>
+</head>
+
+<body>
+  <div id="loader" class="loader-wrapper">
+    <figure>
+      <div class="dot white">
+      </div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+    </figure>
+    <div style="
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, calc(80px - 50%));
+      color: rgb(227, 227, 227);
+      font-size: 24px;
+      font-weight: bold;
+      text-align: center;
+      padding: 20px;
+    ">
+    Loading
+  </div>
+  </div>
+  <!-- Right-hand side container -->
+  <div id="rhs">
+      <!-- Query box -->
+      <div id="query_box">
+          <!-- Input container -->
+          <div class="input-container">
+              <!-- Textarea -->
+              <textarea class="text-input" id="txid">Ask</textarea>
+          </div>
+      </div>
+      <!-- Response box -->
+      <div id="reponse_box">
+        <div id="output_container">
+        </div>
+      </div>
+  </div>
+  <!-- <label for="alphaSlider" id="alphaSlider">Threshold</label> -->
+  <input
+    type="range"
+    min="1"
+    max="255"
+    value="255"
+    class="slider"
+    id="alphaSlider"
+  />
+  <select id="sliceType" style="display: none;">
+    <option value="0">Axial</option>
+    <option value="1">Coronal</option>
+    <option value="2">Sagittal</option>
+    <option value="4">Render</option>
+    <option value="3" selected>A+C+S+R</option>
+  </select>
+
+  <script>
+      // Automatically resize the textarea based on its content
+      const textarea = document.getElementById("txid");
+      textarea.addEventListener('input', function () {
+          this.style.height = 'auto'; // Reset height to allow shrinking
+          this.style.height = this.scrollHeight + 'px'; // Adjust height based on content
+      });
+
+      // Add event listener to clear default text on focus
+      textarea.addEventListener('focus', function () {
+          if (this.value === "Ask") {
+              this.value = ""; // Clear the default text
+          }
+      });
+
+      // Add event listener to set back default text if textarea is empty on blur
+      textarea.addEventListener('blur', function () {
+          if (this.value.trim() === "") {
+              this.value = "Ask"; // Reset to default text
+          }
+      });
+  </script>
+
+
+</body>
+<footer id="intensity" style="display: none;">&nbsp;</footer>
