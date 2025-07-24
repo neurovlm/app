@@ -5,7 +5,9 @@ const worker = new Worker('/static/js/lzma-worker.js');
 // Cache for frequently used data
 const cache = {
     remap: null,
-    surfaceMap: null
+    surfaceMap: null,
+    links: null,
+    titles: null
 };
 
 function waitForElement(selector, timeout = 10000) {
@@ -60,6 +62,33 @@ async function preloadRemapData() {
     return cache.remap;
 }
 
+async function preloadTitlesData() {
+    if (!cache.remap) {
+        try {
+            const response = await fetch('/static/titles.txt');
+            const data = await response.text();
+            cache.titles = data.split('\n').filter(line => line.trim() !== '');
+        } catch (error) {
+            console.error('Error preloading titles data:', error);
+            cache.titles = [];
+        }
+    }
+    return cache.titles;
+}
+
+async function preloadLinksData() {
+    if (!cache.remap) {
+        try {
+            const response = await fetch('/static/links.txt');
+            const data = await response.text();
+            cache.titles = data.split('\n').filter(line => line.trim() !== '');
+        } catch (error) {
+            console.error('Error preloading links data:', error);
+            cache.titles = [];
+        }
+    }
+    return cache.titles;
+}
 // Optimized surface map processing
 function processSurfaceMap(_surface_map, reinds) {
     if (!cache.surfaceMap) {
@@ -93,6 +122,8 @@ function debounce(func, wait) {
 async function run() {
     // Pre-load remap data in parallel
     const remapPromise = preloadRemapData();
+    const linksPromise = preloadLinksData();
+    const titlesPromise = preloadTitlesData();
 
     // Get text box input
     const textbox = document.getElementById("txid");
@@ -123,8 +154,11 @@ async function run() {
             const { surface: _surface_map, volume, puborder: pub_order } = out;
 
             // Process citations in batches to avoid blocking
-            const ordered_citations = Array.from(pub_order).map(i => citations[Math.floor(i)]);
-            const ordered_links = Array.from(pub_order).map(i => citation_links[Math.floor(i)]);
+            const titles = await titlesPromise;
+            const links = await linksPromise;
+
+            const ordered_citations = Array.from(pub_order).map(i => titles[Math.floor(i)]);
+            const ordered_links = Array.from(pub_order).map(i => links[Math.floor(i)]);
 
             // Use DocumentFragment for better DOM performance
             const fragment = document.createDocumentFragment();

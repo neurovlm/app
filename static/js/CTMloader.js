@@ -106,27 +106,17 @@ THREE.CTMLoader.prototype.load = function( url, callback, parameters ) {
 
                 if ( parameters.useWorker ) {
 
-                    var worker = new Worker( "resources/js/ctm/CTMWorker.js" );
+                    var worker = new Worker( window.URL.createObjectURL(new Blob([document.getElementById('CTMWorker').textContent])) );
 
                     worker.onmessage = function( event ) {
 
                         var ctmFile = event.data;
 
-                        var e1 = Date.now();
-                        // console.log( "CTM data parse time [worker]: " + (e1-s) + " ms" );
-
                         if ( useBuffers ) {
-
                             scope.createModelBuffers( ctmFile, callback );
-
                         } else {
-
                             scope.createModelClassic( ctmFile, callback );
-
                         }
-
-                        var e = Date.now();
-                        console.log( "model load time [worker]: " + (e-e1) + " ms, total: " + (e-s));
 
                     };
 

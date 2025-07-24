@@ -53,7 +53,7 @@ var mriview = (function(module) {
                 shininess:  { type:'f',  value:1000},
                 specularStrength:{ type:'f',  value:this._specular},
 
-                thickmix:   { type:'f',  value:0.5},
+                thickmix:   { type:'f',  value:0.},
                 surfmix:    { type:'f',  value:0},
                 bumpyflat:  { type:'i',  value:viewopts.bumpy_flatmap == 'true'},
                 allowtilt:  { type:'i',  value:viewopts.allow_tilt == 'true'},
