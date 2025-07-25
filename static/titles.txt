@@ -654,8 +654,7 @@ Affective response to a loved one's pain: insula activity as a function of indiv
 Anxiety positive subjects show altered processing in the anterior insula during anticipation of negative stimuli.
 Effects of problem size and arithmetic operation on brain activation during calculation in children with varying levels of arithmetical fluency.
 fMRI item analysis in a theory of mind task.
-"Neuronal network pharmacodynamics of GABAergic modulation in the human cortex determined using pharmaco‐magnetoencephalography†
-"
+Neuronal network pharmacodynamics of GABAergic modulation in the human cortex determined using pharmaco‐magnetoencephalography† 
 Complex span tasks and hippocampal recruitment during working memory.
 Network discovery with DCM.
 Time spent with friends in adolescence relates to less neural sensitivity to later peer rejection.
@@ -1563,8 +1562,7 @@ Social economic decision-making across the lifespan: An fMRI investigation.
 Disinhibited feedback as a cause of synesthesia: evidence from a functional connectivity study on auditory-visual synesthetes.
 Neural correlates of attention bias to threat in post-traumatic stress disorder.
 I feel good whether my friends win or my foes lose: brain mechanisms underlying feeling similarity.
-"
-De Qi, a Threshold of the Stimulus Intensity, Elicits the Specific Response of Acupoints and Intrinsic Change of Human Brain to Acupuncture"
+" De Qi, a Threshold of the Stimulus Intensity, Elicits the Specific Response of Acupoints and Intrinsic Change of Human Brain to Acupuncture"
 Neural correlates of temporal integration in face recognition: an fMRI study.
 Patterns of response to visual scenes are linked to the low-level properties of the image.
 Reward system dysfunction in autism spectrum disorders.
@@ -1600,8 +1598,7 @@ Visemic processing in audiovisual discrimination of natural speech: a simultaneo
 Neural bases of falsification in conditional proposition testing: evidence from an fMRI study.
 The archeologist's career ended in ruins: hemispheric differences in pun comprehension in autism.
 Equality versus self-interest in the brain: differential roles of anterior insula and medial prefrontal cortex.
-"
-fMRI functional connectivity of the periaqueductal gray in PTSD and its dissociative subtype"
+ fMRI functional connectivity of the periaqueductal gray in PTSD and its dissociative subtype
 Neural processing of reward and punishment in young people at increased familial  risk of depression.
 Neural Activity during Natural Viewing of Sesame Street Statistically Predicts Test Scores in Early Childhood
 Disgust proneness and associated neural substrates in obesity.
@@ -2427,8 +2424,7 @@ Functional developmental similarities and differences in the neural correlates o
 Voluntary and involuntary attention affect face discrimination differently.
 Rule-selection and action-selection have a shared neuroanatomical basis in the human prefrontal and parietal cortex.
 Functional re-recruitment of dysfunctional brain areas predicts language recovery in chronic aphasia.
-"
-DRD2/CHRNA5 Interaction on Prefrontal Biology and Physiology during Working Memory"
+ DRD2/CHRNA5 Interaction on Prefrontal Biology and Physiology during Working Memory
 Aging and the interaction of sensory cortical function and structure.
 Intolerance of uncertainty correlates with insula activation during affective ambiguity.
 Neural representations of kinematic laws of motion: evidence for action-perception coupling.
@@ -7824,8 +7820,7 @@ Functional differences among those high and low on a trait measure of psychopath
 Absence of gender effect on children with attention-deficit/hyperactivity disorder as assessed by optimized voxel-based morphometry
 Left insula activation: a marker for language attainment in bilinguals.
 Experience-dependent plasticity for attention to threat: Behavioral and neurophysiological evidence in humans.
-"Temporal regularity of intrinsic cerebral activity in patients with chronic primary insomnia: a brain entropy study using resting‐state fMRI
-"
+Temporal regularity of intrinsic cerebral activity in patients with chronic primary insomnia: a brain entropy study using resting‐state fMRI 
 "Chronic smoking, but not acute nicotine administration, modulates neural correlates of working memory."
 Direction and magnitude of nicotine effects on the fMRI BOLD response are related to nicotine effects on behavioral performance.
 Nicotine effects on default mode network during resting state.
@@ -7892,8 +7887,7 @@ The neural correlates of speech motor sequence learning.
 "Entorhinal volume, aerobic fitness, and recognition memory in healthy young adults: A voxel-based morphometry study."
 The effect of ageing on grey and white matter reductions in schizophrenia.
 Widespread brain dysconnectivity associated with psychotic-like experiences in the general population☆
-"
-CBT reduces CBF: cognitive‐behavioral therapy reduces cerebral blood flow in fear‐relevant brain regions in spider phobia"
+ CBT reduces CBF: cognitive‐behavioral therapy reduces cerebral blood flow in fear‐relevant brain regions in spider phobia
 Superior temporal sulcus disconnectivity during processing of metaphoric gestures in schizophrenia.
 Structural basis of the fronto-thalamic dysconnectivity in schizophrenia: A combined DCM-VBM study☆
 Differences in white matter reflect atypical developmental trajectory in autism: A Tract-based Spatial Statistics study☆
@@ -7911,8 +7905,7 @@ Linguistic Grammar Learning and DRD2-TAQ-IA Polymorphism
 The brain network reflecting bodily self-consciousness: a functional connectivity study.
 Fiber tract-driven topographical mapping (FTTM) reveals microstructural relevance for interhemispheric visuomotor function in the aging brain.
 Increased BOLD signal in the fusiform gyrus during implicit emotion processing in anorexia nervosa☆
-"Neuroanatomical markers of speaking Chinese†
-"
+Neuroanatomical markers of speaking Chinese† 
 Regional gray matter density is associated with morningness-eveningness: Evidence from voxel-based morphometry.
 Ventral medial prefrontal cortex and person evaluation: forming impressions of others varying in financial and moral status.
 Multivariate pattern analysis of DTI reveals differential white matter in individuals with obsessive‐compulsive disorder
@@ -7934,8 +7927,7 @@ The effect of working memory performance on functional MRI in schizophrenia
 Posttraumatic Stress Disorder as a Catalyst for the Association Between Metabolic Syndrome and Reduced Cortical Thickness.
 Entacapone Reduces Cortical Activation in Parkinson's Disease with Wearing-Off: A f-MRI Study
 Differential motor and prefrontal cerebello-cortical network development: Evidence from multimodal neuroimaging.
-"Correlation between the Effects of Acupuncture at Taichong (LR3) and Functional Brain Areas: A Resting-State Functional
-Magnetic Resonance Imaging Study Using True versus Sham Acupuncture"
+Correlation between the Effects of Acupuncture at Taichong (LR3) and Functional Brain Areas: A Resting-State Functional Magnetic Resonance Imaging Study Using True versus Sham Acupuncture
 Examining gray matter structures associated with individual differences in global life satisfaction in a large sample of young adults.
 A New Paradigm for Individual Subject Language Mapping: Movie-Watching fMRI.
 Neural evidence for cultural differences in the valuation of positive facial expressions.
@@ -7949,10 +7941,8 @@ Visual and proprioceptive interaction in patients with bilateral vestibular loss
 DAT by perceived MC interaction on human prefrontal activity and connectivity during emotion processing.
 Neural responses to maternal criticism in healthy youth.
 Anatomical changes within the medullary dorsal horn in chronic temporomandibular disorder pain.
-"Medial Prefrontal Cortex: Adding Value to Imagined
-Scenarios"
-"Local Anesthesia at ST36 to Reveal Responding Brain Areas to deqi
-"
+Medial Prefrontal Cortex: Adding Value to Imagined Scenarios
+Local Anesthesia at ST36 to Reveal Responding Brain Areas to deqi 
 Deficits in Visual System Functional Connectivity after Blast‐Related Mild TBI are Associated with Injury Severity and Executive Dysfunction
 White matter abnormalities associated with auditory hallucinations in schizophrenia: A combined study of voxel-based analyses of diffusion tensor imaging and structural magnetic resonance imaging
 Mothers' neural activation in response to pictures of their children and other children
@@ -8222,8 +8212,7 @@ Dissociable attentional and affective circuits in medication-naïve children wit
 Neural correlates of painful genital touch in women with vulvar vestibulitis syndrome.
 Movement preparation in self-initiated versus externally triggered movements: an event-related fMRI-study
 Grey matter changes over time in high risk subjects developing schizophrenia.
-"Neural Substrates Underlying Learning-Related Changes of the
-Unconditioned Fear Response"
+Neural Substrates Underlying Learning-Related Changes of the Unconditioned Fear Response
 Perceptual bias following visual target selection.
 Voxel-based morphometry and stereology provide convergent evidence of the importance of medial prefrontal cortex for fluid intelligence in healthy adults.
 Trial pacing in mental rotation tasks.
@@ -8491,8 +8480,7 @@ The neural signature of social norm compliance.
 Systemizing influences attentional processes during the Navon task: an fMRI study.
 Neuronal correlates of reward and loss in Cluster B personality disorders: a functional magnetic resonance imaging study.
 Cortical activity time locked to the shift and maintenance of spatial attention.
-"Association between striatal dopamine D2/D3 receptors and
-brain activation during visual attention: effects of sleep deprivation"
+Association between striatal dopamine D2/D3 receptors and brain activation during visual attention: effects of sleep deprivation
 Que PASA? The posterior-anterior shift in aging.
 Neural correlates of working memory performance in adolescents and young adults with dyslexia.
 Separable neural mechanisms contribute to feedback processing in a rule-learning  task.
@@ -15771,8 +15759,7 @@ Brain activation by a VR-based motor imagery and observation task: An fMRI study
 Global Brain Involvement in Posterior Cortical Atrophy: Multimodal MR Imaging Investigation.
 Neural correlates of top‐down modulation of haptic shape versus roughness perception
 Fast reproducible identification and large-scale databasing of individual functional cognitive networks
-"The MIR137 VNTR rs58335419 Is Associated With Cognitive
-Impairment in Schizophrenia and Altered Cortical Morphology"
+The MIR137 VNTR rs58335419 Is Associated With Cognitive Impairment in Schizophrenia and Altered Cortical Morphology
 Exposure in vivo Induced Changes in Neural Circuitry for Pain-Related Fear: A Longitudinal fMRI Study in Chronic Low Back Pain
 Bimodal electroencephalography-functional magnetic resonance imaging dataset for inner-speech recognition
 Altered cortical thickness and emotional dysregulation in adolescents with borderline personality disorder
@@ -15926,8 +15913,7 @@ Neural correlates of negative and disease-specific emotional stimuli in panic di
 Mapping Progressive Gray Matter Alterations in Early Childhood Autistic Brain.
 Intrinsic functional connectivity of blue and red brains: neurobiological evidence of different stress resilience between political attitudes
 The importance of covert memory consolidation in schizophrenia: Dysfunctional network profiles of the hippocampus and the dorsolateral prefrontal cortex.
-"Targeting pain catastrophization in patients with fibromyalgia using virtual
-reality exposure therapy: a proof-of-concept study"
+Targeting pain catastrophization in patients with fibromyalgia using virtual reality exposure therapy: a proof-of-concept study
 Altered Functional Activity and Functional Connectivity of Seed Regions Based on ALFF Following Acupuncture Treatment in Patients with Stroke Sequelae with Unilateral Limb Numbness
 Brain Plasticity in Charcot-Marie-Tooth Type 1A Patients? A Combined Structural and Diffusion MRI Study
 Functional connectivity alterations in the thalamus among patients with bronchial asthma
@@ -15938,8 +15924,7 @@ Selective extinction through cognitive evaluation: Linking emotion regulation an
 Using support vector machine to explore the difference of function connection between deficit and non-deficit schizophrenia based on gray matter volume
 Stimulus Variability Affects the Amplitude of the Auditory Steady-State Response
 Investigating the effect of hippocampal sclerosis on parietal memory network
-"Reduced Metabolism in Brain “Control Networks” following
-Cocaine-Cues Exposure in Female Cocaine Abusers"
+Reduced Metabolism in Brain “Control Networks” following Cocaine-Cues Exposure in Female Cocaine Abusers
 Comparison of ApoE-related brain connectivity differences in early MCI and normal aging populations: an fMRI study.
 Olfactory functional covariance connectivity in Parkinson’s disease: Evidence from a Chinese population
 "Abnormal Functional Connectivity in Cognitive Control Network, Default Mode Network, and Visual Attention Network in Internet Addiction: A Resting-State fMRI Study"
@@ -16160,8 +16145,7 @@ The Association Between Genetic Variation in FOXP2 and Sensorimotor Control of S
 Functional cross‐hemispheric shift between object‐place paired associate memory and spatial memory in the human hippocampus
 Neural correlates of mental state decoding and mental state reasoning in schizophrenia.
 Altered Functional Connectivity of Cognitive-Related Cerebellar Subregions in Well-Recovered Stroke Patients
-"Neural correlates of social influence on risk perception during
-development"
+Neural correlates of social influence on risk perception during development
 Neural responsiveness to Chinese versus Western food images: An functional magnetic resonance imaging study of Chinese young adults
 Carpal tunnel surgery dampens thalamocortical and normalizes corticocortical functional connectivity
 Brain activation after nasal histamine provocation in house dust mite allergic rhinitis patients
@@ -16366,8 +16350,7 @@ Normal variation in fronto-occipital circuitry and cerebellar structure with an 
 Additive Routes to Action Learning: Layering Experience Shapes Engagement of the Action Observation Network
 Abnormalities in the Fractional Amplitude of Low-Frequency Fluctuation and Functional Connectivity in Parkinson's Disease With Excessive Daytime Sleepiness
 A comparative study of interhemispheric functional connectivity in major depression and schizophrenia.
-"Differences in Brain Hemodynamics in Response to Achromatic and
-Chromatic Cards of the Rorschach"
+Differences in Brain Hemodynamics in Response to Achromatic and Chromatic Cards of the Rorschach
 Ultra-high field MRI reveals mood-related circuit disturbances in depression: a comparison between 3-Tesla and 7-Tesla
 Cerebellar neural markers of susceptibility to social isolation and positive affective processing
 Altered Spontaneous Brain Activity and Its Predictive Role in Patients with Central Retinal Artery Occlusion Using fMRI and Machine Learning
@@ -16480,9 +16463,7 @@ Involvement of the left insula in the ecological validity of the human voice
 Effects of polygenic risk for major mental disorders and cross-disorder on cortical complexity
 Multitier Network Analysis Using Resting-state Functional MRI for Epilepsy Surgery
 Human thirst behavior requires transformation of sensory inputs by intrinsic brain networks
-"Time-varying connectivity of the precuneus and its association with
-cognition and depressive symptoms in neuromyelitis optica: A pilot MRI
-study"
+Time-varying connectivity of the precuneus and its association with cognition and depressive symptoms in neuromyelitis optica: A pilot MRI study
 Salience Network and Depressive Severities in Parkinson’s Disease with Mild Cognitive Impairment: A Structural Covariance Network Analysis
 Audio–visual and olfactory–visual integration in healthy participants and subjects with autism spectrum disorder
 Cerebral perfusion changes in chronic dizziness: A single-photon emission computed tomography study
@@ -16566,9 +16547,7 @@ Task-residual effective connectivity of motor network in transient ischemic atta
 Alteration of functional connectivity in autism spectrum disorder: effect of age and anatomical distance
 "Neocortical substrates of feelings evoked with music in the ACC, insula, and somatosensory cortex"
 "Neuroanatomical correlates of aging, cardiopulmonary fitness level, and education."
-"Evidence of altered brain network centrality in patients with
-diabetic nephropathy and retinopathy: an fMRI study using a voxel-wise degree
-centrality approach"
+Evidence of altered brain network centrality in patients with diabetic nephropathy and retinopathy: an fMRI study using a voxel-wise degree centrality approach
 Aberrant Interhemispheric Functional Connectivity in Diabetic Retinopathy Patients
 Regional Brain Structural Abnormality in Meal-Related Functional Dyspepsia Patients: A Voxel-Based Morphometry Study
 The effects of intermittent theta burst stimulation of the unilateral cerebellar hemisphere on swallowing-related brain regions in healthy subjects
@@ -16747,8 +16726,7 @@ Other people’s gaze encoded as implied motion in the human brain
 Brain imaging-based machine learning in autism spectrum disorder: methods and applications.
 Brain activity during pursuit and goal-conflict threat avoidance in major depressive disorder
 Six-Minute Walking Distance Correlated with Memory and Brain Volume in Older Adults with Mild Cognitive Impairment: A Voxel-Based Morphometry Study
-"Brain structural correlates of autistic traits across the diagnostic
-divide: A grey matter and white matter microstructure study"
+Brain structural correlates of autistic traits across the diagnostic divide: A grey matter and white matter microstructure study
 Modulation effects of repeated transcranial direct current stimulation on the dorsal attention and frontal parietal networks and its association with placebo and nocebo effects
 Amisulpride and l‐DOPA modulate subcortical brain nuclei connectivity in resting‐state pharmacologic magnetic resonance imaging
 Elevated Dopamine Synthesis as a Mechanism of Cognitive Resilience in Aging.
@@ -17242,8 +17220,7 @@ Effects of the dopamine transporter gene on neuroimaging findings in different a
 Cognitive-behavioral therapy effects on alerting network activity and effective connectivity in panic disorder.
 Intrinsic functional connectivity in late-life depression: trajectories over the course of pharmacotherapy in remitters and non-remitters
 Right‐hemispheric language reorganization in patients with brain arteriovenous malformations: A functional magnetic resonance imaging study
-"Disorder-specific grey matter deficits in attention deficit hyperactivity
-disorder relative to autism spectrum disorder"
+Disorder-specific grey matter deficits in attention deficit hyperactivity disorder relative to autism spectrum disorder
 Identification of suicidality in patients with major depressive disorder via dynamic functional network connectivity signatures and machine learning
 Multimodal neuroimaging evidence for looser lexico-semantic networks in schizophrenia:Evidence from masked indirect semantic priming.
 Disrupted Spontaneous Neural Activity Related to Cognitive Impairment in Postpartum Women
@@ -17550,9 +17527,7 @@ Multiple genetic imaging study of the association between cholesterol metabolism
 Machine learning and dyslexia: Classification of individual structural neuro-imaging scans of students with and without dyslexia
 Neurocognitive basis of deductive reasoning in children varies with parental education
 Resting State Connectivity Between Medial Temporal Lobe Regions and Intrinsic Cortical Networks Predicts Performance in a Path Integration Task
-"The Threatful Self: Midbrain Functional Connectivity to Cortical
-Midline and Parietal Regions During Subliminal Trauma-Related Processing in
-PTSD"
+The Threatful Self: Midbrain Functional Connectivity to Cortical Midline and Parietal Regions During Subliminal Trauma-Related Processing in PTSD
 Inter-hemispheric connectivity in the fusiform gyrus supports memory consolidation for faces.
 PET Hypometabolism of the Prefrontal-Cingulate Cortices in Internet Gaming Disorder
 Role of emotional processing in depressive responses to sex-hormone manipulation: a pharmacological fMRI study
@@ -17688,8 +17663,7 @@ Electrophysiological correlates of focused attention on low- and high-distressed
 Neural correlates of taste reactivity in autism spectrum disorder
 Exploration of the Brain in Rest: Resting-State Functional MRI Abnormalities in Patients with Classic Galactosemia
 Inefficient Involvement of Insula in Sensorineural Hearing Loss
-"A spectral sampling algorithm in dynamic causal modelling for resting‐state fMRI
-"
+A spectral sampling algorithm in dynamic causal modelling for resting‐state fMRI 
 Novel Functional MRI Task for Studying the Neural Correlates of Upper Limb Tremor
 Better you lose than I do: neural networks involved in winning and losing in a real time strictly competitive game
 Increased brain response to appetitive tastes in the insula and amygdala in obese compared to healthy weight children when sated
@@ -17993,8 +17967,7 @@ Abnormal functional connectivity of the striatum in first‐episode drug‐naive
 Neural correlates of interoceptive accuracy: Beyond cardioception.
 Brain functional connectivity in sleep-related hypermotor epilepsy
 Relationship between structural brainstem and brain plasticity and lower-limb training in spinal cord injury: a longitudinal pilot study
-"Time-delay structure predicts clinical scores for patients with
-disorders of consciousness using resting-state fMRI"
+Time-delay structure predicts clinical scores for patients with disorders of consciousness using resting-state fMRI
 Cortical Thinning in the Medial Temporal Lobe and Precuneus Is Related to Cognitive Deficits in Patients With Subcortical Ischemic Vascular Disease
 Atypical Balance between Occipital and Fronto-Parietal Activation for Visual Shape Extraction in Dyslexia
 Metabolic lesion-deficit mapping of human cognition
@@ -19031,8 +19004,7 @@ Domain‐specific and domain‐general neural network engagement during human–
 Reduced default mode network effective connectivity in healthy aging is modulated by years of education.
 Sex Differences and Menstrual Cycle Phase-Dependent Modulation of Craving for Cigarette: An fMRI Pilot Study
 Extraversion and neuroticism related to the resting-state effective connectivity of amygdala
-"Case-control resting-state fMRI study of brain functioning among 
-adolescents with first-episode major depressive disorder"
+Case-control resting-state fMRI study of brain functioning among  adolescents with first-episode major depressive disorder
 "Attention, awareness, and the right temporoparietal junction"
 A Study of Differential Resting-State Brain Functional Activity in Males and Females with Recurrent Depressive Disorder
 Aberrant Executive Control and Auditory Networks in Recent-Onset Schizophrenia
@@ -19088,8 +19060,7 @@ Instructions and experiential learning have similar impacts on pain and pain-rel
 Brain substrates explain differences in the adoption and degree of financial digitalization
 Neural signals of vicarious extinction learning.
 Perfusion MRI and computerized cognitive test abnormalities in abstinent methamphetamine users.
-"Visual Experience Shapes Orthographic Representations in the Visual Word Form
-Area"
+Visual Experience Shapes Orthographic Representations in the Visual Word Form Area
 Aberrant spontaneous low-frequency brain activity in male patients with severe obstructive sleep apnea revealed by resting-state functional MRI
 "Functional connectivity during orthographic, phonological, and semantic processing of Chinese characters identifies distinct visuospatial and phonosemantic networks"
 Subthalamic nucleus stimulation effects on single and combined task performance in Parkinson's disease patients: a PET study.
@@ -19224,8 +19195,7 @@ Altered insular functional connectivity correlates to impaired vigilant attentio
 Adolescent Major Depressive Disorder: Neuroimaging Evidence of Sex Difference during an Affective Go/No-Go Task
 Frequency‐dependent modulation of neural oscillations across the gait cycle
 Assessing drug cue-induced brain response in heroin dependents treated by methadone maintenance and protracted abstinence measures.
-"Lasting consequences of concussion on the aging brain: Findings from
-the Baltimore Longitudinal Study of Aging"
+Lasting consequences of concussion on the aging brain: Findings from the Baltimore Longitudinal Study of Aging
 Neural reward related-reactions to monetar gains for self and charity are associated with donating behavior in adolescence
 Altered cognitive control network mediates the association between long-term pain and anxiety symptoms in primary dysmenorrhea
 When worry may be good for you: Worry severity and limbic-prefrontal functional connectivity in late-life generalized anxiety disorder.
@@ -19298,8 +19268,7 @@ A Preliminary Study of Functional Brain Activation among Marijuana Users during 
 Psychological and neural responses to architectural interiors.
 Self-regulation in the pre-adolescent brain
 Gender Specific Re-organization of Resting-State Networks in Older Age
-"Hippocampal subregions and networks linked with antidepressant
-response to electroconvulsive therapy"
+Hippocampal subregions and networks linked with antidepressant response to electroconvulsive therapy
 Regional white matter variation associated with domain-specific metacognitive accuracy.
 How does human motor cortex regulate vocal pitch in singers?
 Altered empathy processing in frontotemporal dementia A task-based fMRI study
@@ -19846,8 +19815,7 @@ Influence of trait anxiety on inhibitory control in alcohol-dependent patients: 
 The Dorsal Anterior Cingulate Cortex Modulates Dialectical Self-Thinking
 Altered development of hippocampus-dependent associative learning following early-life adversity
 Recovery and chronicity in anorexia nervosa: brain activity associated with differential outcomes.
-"Temporoparietal Junction Functional Connectivity in Early
-Schizophrenia and Major Depressive Disorder"
+Temporoparietal Junction Functional Connectivity in Early Schizophrenia and Major Depressive Disorder
 The neurodevelopmental differences of increasing verbal working memory demand in  children and adults.
 As Working Memory Grows: A Developmental Account of Neural Bases of Working Memory Capacity in 5- to 8-Year Old Children and Adults.
 Brain basis of developmental change in visuospatial working memory.
@@ -20588,14 +20556,11 @@ The Right Inferior Frontal Gyrus Plays an Important Role in Unconscious Informat
 Continuous theta burst stimulation-induced suppression of the right fronto-thalamic-cerebellar circuit accompanies improvement in language performance in poststroke aphasia: A resting-state fMRI study
 The Neurobiology of Semantic Processing in Autism Spectrum Disorder: An Activation Likelihood Estimation Analysis.
 A novel Bayesian approach to accounting for uncertainty in fMRI-derived estimates of cerebral oxygen metabolism fluctuations.
-"
-Acupuncture-Evoked Response in Somatosensory and Prefrontal Cortices Predicts Immediate Pain Reduction in Carpal Tunnel Syndrome"
+ Acupuncture-Evoked Response in Somatosensory and Prefrontal Cortices Predicts Immediate Pain Reduction in Carpal Tunnel Syndrome
 Cerebral Neural Changes in Venous–Arterial Extracorporeal Membrane Oxygenation Survivors
 Converging Evidence for the Processing Costs Associated with Ambiguous Quantifier Comprehension
 "An obesity-associated risk allele within the FTO gene affects human brain activity for areas important for emotion, impulse control and reward in response to food images."
-"Resting State Functional Connectivity Correlates of Inhibitory
-Control in Children with Attention-Deficit/Hyperactivity
-Disorder"
+Resting State Functional Connectivity Correlates of Inhibitory Control in Children with Attention-Deficit/Hyperactivity Disorder
 Neural effects of acute stress on appetite: A magnetoencephalography study
 Auditory Cognitive Training Improves Brain Plasticity in Healthy Older Adults: Evidence From a Randomized Controlled Trial
 Loud and angry: sound intensity modulates amygdala activation to angry voices in social anxiety disorder
@@ -20622,8 +20587,7 @@ Cerebral white matter diffusion properties and free‐water with obstructive sle
 Application of amplitude of low-frequency fluctuation to altered spontaneous neuronal activity in classical trigeminal neuralgia patients: A resting-state functional MRI study
 Common gray matter loss in the frontal cortex in patients with methamphetamine-associated psychosis and schizophrenia
 Spontaneous neural activity in the right fusiform gyrus and putamen is associated with consummatory anhedonia in obsessive compulsive disorder.
-"Intrusive memories to traumatic footage: the neural basis of their encoding
-and involuntary recall"
+Intrusive memories to traumatic footage: the neural basis of their encoding and involuntary recall
 Characterization of Face-Selective Patches in Orbitofrontal Cortex
 Altered neural activity in the reward-related circuit associated with anhedonia in mild to moderate Major Depressive Disorder.
 Anodal cerebellar stimulation increases cortical activation: Evidence for cerebellar scaffolding of cortical processing
@@ -21274,8 +21238,7 @@ TEAMwork: Testing Emotional Attunement and Mutuality During Parent-Adolescent fM
 The Predictive Value of Dynamic Intrinsic Local Metrics in Transient Ischemic Attack
 Prefrontal-amygdala emotion regulation and depression in multiple sclerosis
 Variable activation in striatal subregions across components of a social influence task in young adult cannabis users
-"Extrinsic functional connectivity of the default mode network in
-crack-cocaine users"
+Extrinsic functional connectivity of the default mode network in crack-cocaine users
 Large-scale brain network associated with creative insight: combined voxel-based morphometry and resting-state functional connectivity analyses
 Cerebral Activity Associated with Transient Sleep-Facilitated Reduction in Motor Memory Vulnerability to Interference
 Exploring Feature Dimensions to Learn a New Policy in an Uninformed Reinforcement Learning Task
@@ -21478,8 +21441,7 @@ Locating neural transfer effects of n-back training on the central executive: a 
 Preliminary Evidence of Improvement in Adolescent and Young Adult Cancer Survivors’ Brain Health Following Physical Activity: A Proof-of-Concept Sub-Study
 Effect of regional intrinsic activity following two kinds of theta burst stimulation on precuneus
 Cerebellar Structure and Cognitive Ability in Psychosis.
-"The contralateral effects of anticipated stimuli on brain activity measured by ERP and fMRI
-"
+The contralateral effects of anticipated stimuli on brain activity measured by ERP and fMRI 
 Common Sense in Choice: The Effect of Sensory Modality on Neural Value Representations
 Sex Differences in Gray Matter Volume of the Right Anterior Hippocampus Explain Sex Differences in Three-Dimensional Mental Rotation
 The Insular Subregions Topological Characteristics of Patients With Bipolar Depressive Disorder
@@ -21718,8 +21680,7 @@ Dysfunction in differential reward-punishment responsiveness in conduct disorder
 Belief in Communism and Theory of Mind
 Disturbed neurovascular coupling in hemodialysis patients
 Age-related changes in brain structural covariance networks
-"Comparison of neural substrates of temporal discounting between youth with
-autism spectrum disorder and with obsessive-compulsive disorder"
+Comparison of neural substrates of temporal discounting between youth with autism spectrum disorder and with obsessive-compulsive disorder
 A Longitudinal Study of Local Gyrification Index in Young Boys With Autism Spectrum Disorder.
 Differences in the amplitude of low-frequency fluctuations of spontaneous brain activity between preterm and term infants
 Visual Network Asymmetry and Default Mode Network Function in ADHD: An fMRI Study
@@ -21763,8 +21724,7 @@ Binge drinking is associated with attenuated frontal and parietal activation dur
 Altered brain responses to specific negative emotions in schizophrenia
 Sex commonalities and differences in obesity-related alterations in intrinsic brain activity and connectivity
 Connecting the dots: Motor and default mode network crossroads in post-stroke motor learning deficits
-"Neural correlates of reduced depressive symptoms following cognitive training for chronic traumatic brain injury†
-"
+Neural correlates of reduced depressive symptoms following cognitive training for chronic traumatic brain injury† 
 Neuronal substrates participating in attentional set-shifting of rules for visually guided motor selection: a functional magnetic resonance imaging investigation.
 "Dimensional Complexity of the Resting Brain in Healthy Aging, Using a Normalized MPSE"
 Enhanced insular/prefrontal connectivity when resisting from emotional distraction during visual search
@@ -23463,8 +23423,7 @@ Through the looking glass: Distinguishing neural correlates of relational and no
 Scalp acupuncture enhances local brain regions functional activities and functional connections between cerebral hemispheres in acute ischemic stroke patients
 Altered resting-state functional connectivity in adolescents is associated with PTSD symptoms and trauma exposure
 Reduced default mode network suppression during a working memory task in remitted major depression
-"Altered resting-state functional connectivity in emotion-processing brain
-regions in adults who were born very preterm"
+Altered resting-state functional connectivity in emotion-processing brain regions in adults who were born very preterm
 Cortical Gray Matter and Hippocampal Atrophy in Idiopathic Rapid Eye Movement Sleep Behavior Disorder
 Pattern classification of brain activation during emotional processing in subclinical depression: psychosis proneness as potential confounding factor
 Connectome-based predictive modeling of trait forgiveness
@@ -25168,9 +25127,7 @@ Cortical thinning is associated with brain pulsatility in older adults: An MRI a
 Mesoscopic in vivo human T dataset acquired using quantitative MRI at 7 Tesla.
 Different functional alteration in attention‐deficit/hyperactivity disorder across developmental age groups: A meta‐analysis and an independent validation of resting‐state functional connectivity studies
 Increased cognitive control and reduced emotional interference is associated with reduced PTSD symptom severity in a trauma-exposed sample: A preliminary longitudinal study.
-"Reduced regional activity and functional connectivity within
-sensorimotor network in Parkinson’s patients with restless legs
-syndrome"
+Reduced regional activity and functional connectivity within sensorimotor network in Parkinson’s patients with restless legs syndrome
 Alcoholism gender differences in brain responsivity to emotional stimuli
 Reduced Inter-Voxel White Matter Integrity in Subjective Cognitive Decline: Diffusion Tensor Imaging With Tract-Based Spatial Statistics Analysis
 Altered Brain Functional Connectivity Density in Fast-Ball Sports Athletes With Early Stage of Motor Training
@@ -25626,8 +25583,7 @@ Exploring the Neural Basis of Avatar Identification in Pathological Internet Gam
 Decreased Brain Neurokinin-1 Receptor Availability in Chronic Tennis Elbow
 Effect of Integrated Cognitive Therapy on Hippocampal Functional Connectivity Patterns in Stroke Patients with Cognitive Dysfunction: A Resting-State fMRI Study
 Altered Brain Structure and Function Correlate with Disease Severity and Pain Catastrophizing in Migraine Patients12
-"Effect of Adolescent Bariatric Surgery on the Brain and Cognition: A
-Pilot Study"
+Effect of Adolescent Bariatric Surgery on the Brain and Cognition: A Pilot Study
 Sensorimotor Cortical Neuroplasticity in the Early Stage of Bell's Palsy
 Altered Functional Connectivity of Insular Subregions in Type 2 Diabetes Mellitus
 Altered structural and causal connectivity in frontal lobe epilepsy
@@ -25669,8 +25625,7 @@ EEG-fMRI Signal Coupling Is Modulated in Subjects With Mild Cognitive Impairment
 Critical brain regions related to post-stroke aphasia severity identified by early diffusion imaging are not the same when predicting short- and long-term outcome.
 Motivation but not valence modulates neuroticism-dependent cingulate cortex and insula activity.
 Neural Correlates of Oral Stereognosis—An fMRI Study
-"Managing Cancer and Living Meaningfully (CALM) alleviates chemotherapy related cognitive impairment (CRCI) in breast cancer survivors: A pilot study based on resting‐state fMRI
-"
+Managing Cancer and Living Meaningfully (CALM) alleviates chemotherapy related cognitive impairment (CRCI) in breast cancer survivors: A pilot study based on resting‐state fMRI 
 View Normalization of Object Size in the Right Parietal Cortex
 Neural basis for anxiety and anxiety-related physiological responses during a driving situation: an fMRI study
 Reduced Brainstem Volume After Mild Traumatic Brain Injury
@@ -25766,8 +25721,7 @@ Network level characteristics in the emotion recognition network after unilatera
 Functional reorganization of the reading network in the course of foreign language acquisition.
 Altered brain activity mediates the relationship between white matter hyperintensity severity and cognition in older adults.
 Longitudinal thalamic white and grey matter changes associated with visual hallucinations in Parkinson’s disease
-"
-Cyanea capillata Bell Kinematics Analysis through Corrected In Situ Imaging and Modeling Using Strategic Discretization Techniques"
+ Cyanea capillata Bell Kinematics Analysis through Corrected In Situ Imaging and Modeling Using Strategic Discretization Techniques
 Neurocognitive Mechanisms Underlying Internet/Smartphone Addiction: A Preliminary fMRI Study
 Simultaneous fMRI-EEG-DTI recording of MMN in patients with schizophrenia
 Functional connectivity dysfunction of insular subdivisions in cognitive impairment after acute mild traumatic brain injury
@@ -26023,8 +25977,7 @@ Like mother like daughter: putamen activation as a mechanism underlying intergen
 Neural correlates of moral judgment in pedophilia
 Altered periaqueductal gray resting state functional connectivity in migraine and the modulation effect of treatment
 Typical asymmetry in the hemispheric activation during an fMRI verbal comprehension paradigm is related to better performance in verbal and non-verbal tasks in patients with epilepsy
-"Probing the role of the right inferior frontal gyrus during Pain‐Related empathy processing: Evidence from fMRI and TMS
-"
+Probing the role of the right inferior frontal gyrus during Pain‐Related empathy processing: Evidence from fMRI and TMS 
 Changes in brain activation during sedation induced by dexmedetomidine
 Stepwise functional connectivity reveals altered sensory-multimodal integration in medication-naïve adults with attention deficit hyperactivity disorder.
 Reward Processing in Trichotillomania and Skin Picking Disorder
@@ -26187,8 +26140,7 @@ Neural correlates of visual and tactile path integration and their task related 
 Human premotor areas parse sequences into their spatial and temporal features
 Cerebral blood flow changes in schizophrenia patients with auditory verbal hallucinations during low-frequency rTMS treatment.
 Altered Intrinsic Connectivity Networks in Frontal Lobe Epilepsy: A Resting-State fMRI Study
-"Initial Evidence for Brain Plasticity Following a Digital Therapeutic
-Intervention for Depression"
+Initial Evidence for Brain Plasticity Following a Digital Therapeutic Intervention for Depression
 Abnormal degree centrality in delayed encephalopathy after carbon monoxide poisoning: a resting-state fMRI study
 Fusing Mobile Phone Sensing and Brain Imaging to Assess Depression in College Students
 Brain volume patterns in corticobasal syndrome versus idiopathic Parkinson's disease.
@@ -26439,8 +26391,7 @@ Abnormal Functional and Structural Connectivity of Amygdala-Prefrontal Circuit i
 Dynamic Causal Modeling of the Cortical Responses to Wrist Perturbations
 Categorizing human vocal signals depends on an integrated auditory‐frontal cortical network
 Leveraging the effector independent nature of motor imagery when it is paired with physical practice
-"Divergent subcortical activity for distinct executive functions: stopping and
-shifting in obsessive compulsive disorder"
+Divergent subcortical activity for distinct executive functions: stopping and shifting in obsessive compulsive disorder
 Functional network integration and attention skills in young children
 Default mode network connectivity and social dysfunction in children with Attention Deficit/Hyperactivity Disorder
 Functional connectivity of motor cortical network in patients with brachial plexus avulsion injury after contralateral cervical nerve transfer: a resting-state fMRI study
@@ -26684,8 +26635,7 @@ Excitatory repetitive transcranial magnetic stimulation induces improvements in 
 Pain-Related Brain Activity Evoked by Active and Dynamic Arm Movement: Delayed-Onset Muscle Soreness as a Promising Model for Studying Movement-Related Pain in Humans
 Social identity shapes social valuation: evidence from prosocial behavior and vicarious reward
 Cortical grey matter volume differences in children with developmental coordination disorder compared to typically developing children
-"
-Introspective Minds: Using ALE Meta-Analyses to Study Commonalities in the Neural Correlates of Emotional Processing, Social & Unconstrained Cognition"
+" Introspective Minds: Using ALE Meta-Analyses to Study Commonalities in the Neural Correlates of Emotional Processing, Social & Unconstrained Cognition"
 "The Functional Convergence and Heterogeneity of Social, Episodic, and Self-Referential Thought in the Default Mode Network"
 I am happy for us: Neural processing of vicarious joy when winning for parents versus strangers
 The Cortical Organization of Syntactic Processing Is Supramodal: Evidence from American Sign Language.
@@ -27165,9 +27115,7 @@ A distinction between two instruments measuring dispositional mindfulness and th
 Speech-evoked brain activity is more robust to competing speech when it is spoken by someone familiar.
 Changes in cerebral metabolism in patients with a minimally conscious state responding to zolpidem
 High Field fMRI Reveals Thalamocortical Integration of Segregated Cognitive and Emotional Processing in Mediodorsal and Intralaminar Thalamic Nuclei
-"Multisensory mental imagery of 
-fatigue
-: Evidence from an fMRI study"
+Multisensory mental imagery of  fatigue : Evidence from an fMRI study
 Rethinking recovery in adolescent concussions: Network‐level functional connectivity alterations associated with motor deficits
 Cortical thinning and associated connectivity changes in patients with anorexia nervosa
 The neural substrates responsible for how trait anxiety affects delay discounting: Right hippocampal and cerebellar connectivity with bistable right inferior parietal lobule.
@@ -27235,8 +27183,7 @@ Reading a Suspenseful Literary Text Activates Brain Areas Related to Social Cogn
 MRI characteristics of Japanese macaque encephalomyelitis: Comparison to human diseases.
 Preoperative pain hypersensitivity is associated with axial pain after posterior cervical spinal surgeries in degenerative cervical myelopathy patients: a preliminary resting-state fMRI study
 DNA methylation of the oxytocin receptor interacts with age to impact neural response to social stimuli
-"
-APOE-ε4 Shapes the Cerebral Organization in Cognitively Intact Individuals as Reflected by Structural Gray Matter Networks"
+ APOE-ε4 Shapes the Cerebral Organization in Cognitively Intact Individuals as Reflected by Structural Gray Matter Networks
 "Effect of HD-tDCS on white matter integrity and associated cognitive function in chronic schizophrenia: A double-blind, sham-controlled randomized trial."
 The obese brain as a heritable phenotype – A combined morphometry and twin study
 Mapping the differential impact of spontaneous and conversational laughter on brain and mind: an fMRI study in autism
@@ -27271,8 +27218,7 @@ Functional MRI reveals evidence of a self-positivity bias in the medial prefront
 Disassociated and concurrent structural and functional abnormalities in the drug-naïve first-episode early onset schizophrenia
 The effect of long-term methadone maintenance treatment on coupling among three large-scale brain networks in male heroin-dependent individuals: A resting-state fMRI study.
 A Crucial Role of the Frontal Operculum in Task-Set Dependent Visuomotor Performance Monitoring
-"Abnormal effective connectivity in the sensory network in writer’s
-cramp"
+Abnormal effective connectivity in the sensory network in writer’s cramp
 Effects of Pet Insects on Cognitive Function among the Elderly: An fMRI Study
 Resting-State Functional Magnetic Resonance Imaging Connectivity Between Semantic and Phonological Regions of Interest May Inform Language Targets in Aphasia
 To err is (perfectly) human: behavioural and neural correlates of error processing and perfectionism
@@ -27554,8 +27500,7 @@ Neural correlates of emotion acceptance and suppression in borderline personalit
 Altered Functional Connectivity of the Primary Visual Cortex in Patients With Iridocyclitis and Assessment of Its Predictive Value Using Machine Learning
 Neural activity in adults with major depressive disorder differs from that in healthy individuals: A resting-state functional magnetic resonance imaging study
 Neural Correlates of Listening to Varying Synchrony Between Beats in Samba Percussion and Relations to Feeling the Groove
-"
-EEG mismatch responses in a multimodal roving stimulus paradigm provide evidence for probabilistic inference across audition, somatosensation, and vision"
+" EEG mismatch responses in a multimodal roving stimulus paradigm provide evidence for probabilistic inference across audition, somatosensation, and vision"
 Novelty-related activation within the medial temporal lobes.
 Altered DMN functional connectivity and regional homogeneity in partial epilepsy patients: a seventy cases study
 The Duration of Chronic Pain Can Affect Brain Functional Changes of the Pain Matrix in Patients with Chronic Back Pain: A Resting-State fMRI Study
@@ -27638,8 +27583,7 @@ Combined Evaluation of Noncontrast CT ASPECTS and CT Angiography Collaterals Imp
 Fronto-striatal gray matter contributions to discrimination learning in Parkinson's disease
 Trait self-control mediates the association between resting-state neural correlates and emotional well-being in late adolescence
 Decreased reward circuit connectivity during reward anticipation in major depression
-"Whole Genome Resequencing Reveals Natural Target Site Preferences of Transposable Elements in Drosophila melanogaster
-"
+Whole Genome Resequencing Reveals Natural Target Site Preferences of Transposable Elements in Drosophila melanogaster 
 Neural underpinning of Japanese particle processing in non-native speakers
 Spatial distributions of cholinergic impairment and neuronal hypometabolism differ in MCI due to AD
 Increased functional dynamics in civil aviation pilots: Evidence from a neuroimaging study
@@ -27814,9 +27758,7 @@ Alterations in local activity and functional connectivity in patients with posth
 Serotonergic Contributions to Human Brain Aggression Networks
 Resting-state functional MRI study of conventional MRI-negative intractable epilepsy in children
 Decreased Connection Between Reward Systems and Paralimbic Cortex in Depressive Patients
-"An fMRI study of the effects on normal language areas when
-acupuncturing the Tongli (HT5) and Xuanzhong (GB39)
-acupoints"
+An fMRI study of the effects on normal language areas when acupuncturing the Tongli (HT5) and Xuanzhong (GB39) acupoints
 Inhibition of food craving is a metabolically active process in the brain in obese men
 Altered Intrinsic Regional Activity and Interregional Functional Connectivity in Post-stroke Aphasia
 Aberrant brain entropy in posttraumatic stress disorder comorbid with major depressive disorder during the coronavirus disease 2019 pandemic
@@ -27871,8 +27813,7 @@ Behavioural and Neural Responses to Facial Disfigurement
 The influence of the descending pain modulatory system on infant pain-related brain activity
 Imaging neural architecture of the brain based on its multipole magnetic response.
 Specific and segregated changes to the functional connectome evoked by the processing of emotional faces: A task-based connectome study
-"Alcohol Affects Brain Functional Connectivity and its Coupling with
-Behavior: Greater Effects in Male Heavy Drinkers"
+Alcohol Affects Brain Functional Connectivity and its Coupling with Behavior: Greater Effects in Male Heavy Drinkers
 Ventromedial and dorsolateral prefrontal interactions underlie will to fight and die for a cause
 Fear Processing in Dental Phobia during Crossmodal Symptom Provocation: An fMRI Study
 Resting state network plasticity related to picture naming in low-grade glioma patients before and after resection
@@ -28368,8 +28309,7 @@ The effect of global signal regression on DCM estimates of noise and effective c
 A 7-Tesla MRI study of the periaqueductal gray: resting state and task activation under threat
 Parasympathetic activity correlates with subjective and brain responses to rectal distension in healthy subjects but not in non-constipated patients with irritable bowel syndrome
 Neural substrates of propranolol-induced impairments in the reconsolidation of nicotine-associated memories in smokers
-"Minimizing threat via heuristic and optimal policies recruits
-hippocampus and medial prefrontal cortex"
+Minimizing threat via heuristic and optimal policies recruits hippocampus and medial prefrontal cortex
 Reduced glucose metabolism in neocortical network nodes remote from hypothalamic hamartomas reflects cognitive impairment.
 The Neuromagnetic Dynamics of Time Perception
 Rapid neural changes during novel speech-sound learning: An fMRI and DTI study.

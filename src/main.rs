@@ -1,16 +1,70 @@
 use axum::{
-    extract::{Json, Request},
-    http::Method,
+    extract::{Json, Request, State},
     middleware::{self, Next},
     response::{Html, Response as AxumResponse},
     routing::{get, post},
     Router,
 };
 use serde::{Deserialize, Serialize};
-use std::{net::SocketAddr, time::Instant};
+use std::{net::SocketAddr, sync::Arc, time::Instant};
 use tokio::task;
-use rayon::prelude::*;
-use crate::forward::{load_constants, text_query};
+use candle_transformers::models::bert::{BertModel};
+use tokenizers::{Tokenizer};
+use ndarray::{Array1, Array2};
+use candle_core::Tensor;
+use neurovlm::forward::{load_constants, text_query};
+
+// Define your constants structure
+struct AppConstants {
+    model: BertModel,
+    tokenizer: Tokenizer,
+    mask: Array1<bool>,
+    l_reg_fus: Array2<f32>,
+    r_reg_fus: Array2<f32>,
+    title_embeddings: Tensor,
+    aligner_w0: Tensor,
+    aligner_b0: Tensor,
+    aligner_w1: Tensor,
+    aligner_b1: Tensor,
+    decoder_w0: Tensor,
+    decoder_b0: Tensor,
+    decoder_w1: Tensor,
+    decoder_b1: Tensor,
+    decoder_w2: Tensor,
+    decoder_b2: Tensor
+}
+
+impl AppConstants {
+    fn new() -> Self {
+        println!("Loading constants...");
+        let Ok((
+            model, tokenizer, mask, l_reg_fus, r_reg_fus, title_embeddings,
+            aligner_w0, aligner_b0, aligner_w1, aligner_b1,
+            decoder_w0, decoder_b0, decoder_w1, decoder_b1, decoder_w2, decoder_b2
+        )) = load_constants() else { todo!() };
+
+        println!("Constants loaded successfully");
+
+        Self {
+            model,
+            tokenizer,
+            mask,
+            l_reg_fus,
+            r_reg_fus,
+            title_embeddings,
+            aligner_w0,
+            aligner_b0,
+            aligner_w1,
+            aligner_b1,
+            decoder_w0,
+            decoder_b0,
+            decoder_w1,
+            decoder_b1,
+            decoder_w2,
+            decoder_b2
+        }
+    }
+}
 
 #[derive(Deserialize)]
 struct Query {
@@ -19,9 +73,9 @@ struct Query {
 
 #[derive(Serialize)]
 struct Response {
-    surface: Vec<f32>,     // Surface map data
-    volume: Vec<f32>,      // Volume data
-    puborder: Vec<u32>,    // Publication order indices
+    puborder: Vec<i32>,     // Publication order indices
+    surface: Vec<f32>,      // Surface map data
+    volume: Vec<f32>,       // Changed from Array3<f32> to Vec<f32>
     duration_ms: u128,
 }
 
@@ -35,31 +89,54 @@ async fn log_requests(req: Request, next: Next) -> AxumResponse {
     println!("Response status: {}", response.status());
     response
 }
+
 // Serve your index.html page (you can expand to serve other static files)
 async fn serve_index() -> Html<&'static str> {
     println!("Serving index page");
     Html(include_str!("../static/index.html"))
 }
 
-async fn handle_query(Json(payload): Json<Query>) -> Json<Response> {
+async fn handle_query(
+    State(constants): State<Arc<AppConstants>>,
+    Json(payload): Json<Query>
+) -> Json<Response> {
     println!("Received query: {}", payload.input);
     let start = Instant::now();
 
+    // Clone the Arc to move into the blocking task
+    let constants = Arc::clone(&constants);
+
     // Offload CPU-heavy task to blocking thread
     let result = task::spawn_blocking(move || {
-        // TODO: Replace this with your actual neural network inference
-        // For now, returning dummy data in the expected format
 
-        // Generate dummy surface data (327684 values for fsaverage)
-        let surface: Vec<f32> = (0..327684).map(|i| (i as f32 * 0.001) % 1.0).collect();
+        // Pass query and constants
+        let (top_inds, surface_vec, img3d) = match text_query(
+            &payload.input,
+            &constants.model,
+            &constants.tokenizer,
+            &constants.title_embeddings,
+            &constants.mask,
+            &constants.l_reg_fus,
+            &constants.r_reg_fus,
+            &constants.aligner_w0,
+            &constants.aligner_b0,
+            &constants.aligner_w1,
+            &constants.aligner_b1,
+            &constants.decoder_w0,
+            &constants.decoder_b0,
+            &constants.decoder_w1,
+            &constants.decoder_b1,
+            &constants.decoder_w2,
+            &constants.decoder_b2
+        ) {
+            Ok(vals) => vals,
+            Err(e) => panic!("Query failed: {}", e),
+        };
 
-        // Generate dummy volume data (46*55*46 = 116,140 values)
-        let volume: Vec<f32> = (0..116140).map(|i| (i as f32 * 0.0001) % 0.5 + 0.5).collect();
+        // Convert Array3<f32> to Vec<f32> (Array3 doesn't implement Serialize)
+        let volume_vec = img3d.into_raw_vec_and_offset().0;
 
-        // Generate dummy publication order (100 publications)
-        let puborder: Vec<u32> = (0..100).collect();
-
-        (surface, volume, puborder)
+        (top_inds, surface_vec, volume_vec)
     })
     .await
     .expect("Task panicked");
@@ -68,19 +145,23 @@ async fn handle_query(Json(payload): Json<Query>) -> Json<Response> {
     println!("Query processed in {}ms", duration_ms);
 
     Json(Response {
-        surface: result.0,
-        volume: result.1,
-        puborder: result.2,
+        puborder: result.0,
+        surface: result.1,
+        volume: result.2,
         duration_ms
     })
 }
 
 #[tokio::main]
 async fn main() {
+    // Load constants once at startup
+    let constants = Arc::new(AppConstants::new());
+
     let app = Router::new()
         .route("/", get(serve_index))
         .route("/api/query", post(handle_query))
-        .layer(middleware::from_fn(log_requests));
+        .layer(middleware::from_fn(log_requests))
+        .with_state(constants); // Pass constants to all handlers
 
     let addr = SocketAddr::from(([0, 0, 0, 0], 8081));
     println!("Listening on http://{}", addr);

@@ -5,7 +5,6 @@ const worker = new Worker('/static/js/lzma-worker.js');
 // Cache for frequently used data
 const cache = {
     remap: null,
-    surfaceMap: null,
     links: null,
     titles: null
 };
@@ -89,22 +88,6 @@ async function preloadLinksData() {
     }
     return cache.titles;
 }
-// Optimized surface map processing
-function processSurfaceMap(_surface_map, reinds) {
-    if (!cache.surfaceMap) {
-        cache.surfaceMap = new Float32Array(327684);
-    }
-
-    const surface_map = cache.surfaceMap;
-
-    // Use batch processing for better performance
-    for (let i = 0; i < 163842; i++) {
-        surface_map[i] = _surface_map[reinds[i]];
-        surface_map[i + 163842] = _surface_map[reinds[i + 163842]];
-    }
-
-    return surface_map;
-}
 
 // Debounced function to prevent multiple rapid queries
 function debounce(func, wait) {
@@ -138,20 +121,25 @@ async function run() {
             // Store scroll position
             scrollTop = outputContainer?.scrollTop || 0;
 
+            console.log(query);
+            const start = performance.now();
             // Autoencoder query
             const response = await fetch('/api/query', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ input: query })
             });
+            const end = performance.now();
+            console.log(`Execution time: ${end - start} milliseconds`);
 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
             const out = await response.json();
-
-            const { surface: _surface_map, volume, puborder: pub_order } = out;
+            const surface_ = out.surface;
+            const volume = new Float32Array(out.volume);
+            const pub_order = out.puborder;
 
             // Process citations in batches to avoid blocking
             const titles = await titlesPromise;
@@ -185,17 +173,22 @@ async function run() {
 
             if (reinds) {
                 // Process surface map
-                const surface_map = processSurfaceMap(_surface_map, reinds);
-
-                // Calculate min/max more efficiently
-                let surface_min = surface_map[0];
-                let surface_max = surface_map[0];
-
-                for (let i = 1; i < surface_map.length; i++) {
-                    const val = surface_map[i];
-                    if (val < surface_min) surface_min = val;
-                    if (val > surface_max) surface_max = val;
+                const surface_map = new Float32Array(327684);
+                for (let i = 0; i < 163842; i++) {
+                    surface_map[i] = surface_[reinds[i]];
+                    surface_map[i + 163842] = surface_[reinds[i + 163842]];
                 }
+                // const surface_map = surface_;
+
+                // let surface_min = surface_map[0];
+                // let surface_max = surface_map[0];
+                // for (let i = 1; i < surface_map.length; i++) {
+                //     const val = surface_map[i];
+                //     if (val < surface_min) surface_min = val;
+                //     if (val > surface_max) surface_max = val;
+                // }
+                 let surface_min = 0.0;
+                 let surface_max = 1.0;
 
                 // Re-create dataview
                 const dataviews = dataset.fromJSON({
@@ -239,6 +232,26 @@ async function run() {
 
             const datatypeCode = 16; // code for float32
 
+            // nv1.createNiftiArray(dims, pixDims, affine, datatypeCode, volume)
+            //     .then(bytes => {
+            //         if (nv1.volumes[1] != null){
+            //             nv1.removeVolume(nv1.volumes[1]);
+            //         };
+            //         NVImage.loadFromUrl({
+            //             url: bytes,
+            //             colormap: "magma",
+            //             visible: true,
+            //             opacity: 0.5,
+            //             cal_min: 0.5,
+            //             cal_max: 1.0
+            //         }).then(nii => {
+            //             console.log(nii);
+            //             nv1.addVolume(nii);
+            //         });
+
+            //     });
+
+
             // Remove existing volume before adding new one
             if (nv1.volumes.length > 1) {
                 nv1.removeVolume(nv1.volumes[1]);
@@ -254,7 +267,9 @@ async function run() {
                     cal_min: 0.5,
                     cal_max: 1.0
                 });
+                console.log(nii);
                 nv1.addVolume(nii);
+                console.log(volume);
             } catch (error) {
                 console.error('Error processing volume:', error);
             }
