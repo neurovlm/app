@@ -64,7 +64,7 @@ async function preloadRemapData() {
 async function preloadTitlesData() {
     if (!cache.remap) {
         try {
-            const response = await fetch('/static/titles.txt');
+            const response = await fetch('/static/models/titles.txt');
             const data = await response.text();
             cache.titles = data.split('\n').filter(line => line.trim() !== '');
         } catch (error) {
@@ -78,7 +78,7 @@ async function preloadTitlesData() {
 async function preloadLinksData() {
     if (!cache.remap) {
         try {
-            const response = await fetch('/static/links.txt');
+            const response = await fetch('/static/models/links.txt');
             const data = await response.text();
             cache.titles = data.split('\n').filter(line => line.trim() !== '');
         } catch (error) {
@@ -178,17 +178,15 @@ async function run() {
                     surface_map[i] = surface_[reinds[i]];
                     surface_map[i + 163842] = surface_[reinds[i + 163842]];
                 }
-                // const surface_map = surface_;
-
-                // let surface_min = surface_map[0];
-                // let surface_max = surface_map[0];
-                // for (let i = 1; i < surface_map.length; i++) {
-                //     const val = surface_map[i];
-                //     if (val < surface_min) surface_min = val;
-                //     if (val > surface_max) surface_max = val;
-                // }
-                 let surface_min = 0.0;
-                 let surface_max = 1.0;
+                let surface_min = surface_map[0];
+                let surface_max = surface_map[0];
+                for (let i = 1; i < surface_map.length; i++) {
+                    const val = surface_map[i];
+                    if (val < surface_min) surface_min = val;
+                    if (val > surface_max) surface_max = val;
+                }
+                // let surface_min = 0.0;
+                // let surface_max = 1.0;
 
                 // Re-create dataview
                 const dataviews = dataset.fromJSON({
@@ -232,26 +230,6 @@ async function run() {
 
             const datatypeCode = 16; // code for float32
 
-            // nv1.createNiftiArray(dims, pixDims, affine, datatypeCode, volume)
-            //     .then(bytes => {
-            //         if (nv1.volumes[1] != null){
-            //             nv1.removeVolume(nv1.volumes[1]);
-            //         };
-            //         NVImage.loadFromUrl({
-            //             url: bytes,
-            //             colormap: "magma",
-            //             visible: true,
-            //             opacity: 0.5,
-            //             cal_min: 0.5,
-            //             cal_max: 1.0
-            //         }).then(nii => {
-            //             console.log(nii);
-            //             nv1.addVolume(nii);
-            //         });
-
-            //     });
-
-
             // Remove existing volume before adding new one
             if (nv1.volumes.length > 1) {
                 nv1.removeVolume(nv1.volumes[1]);
@@ -263,13 +241,48 @@ async function run() {
                     url: bytes,
                     colormap: "magma",
                     visible: true,
-                    opacity: 0.5,
-                    cal_min: 0.5,
+                    opacity: 0.8,
+                    cal_min: 0.1,
                     cal_max: 1.0
                 });
-                console.log(nii);
+
+                // Precomputed transformation matrix
+                const t = [
+                    5.42400005033472, 0.0, 0.0, -19.306002583559717,
+                    0.0, 5.42400005033472, 0.0, -20.662002596143395,
+                    0.0, 0.0, 5.42400005033472, -0.3220024073881831,
+                    0.0, 0.0, 0.0, 1.0
+                ]
+
+                // Get argmax and transform to template coordinates
+                const maxIdx = volume.indexOf(Math.max(...volume));
+                const [i_4mm, j_4mm, k_4mm] = [maxIdx%46, Math.floor((maxIdx%2530)/46), Math.floor(maxIdx/2530)];
+                const [i, j, k] = [
+                    Math.round(t[0]*i_4mm + t[1]*j_4mm + t[2]*k_4mm + t[3]),
+                    Math.round(t[4]*i_4mm + t[5]*j_4mm + t[6]*k_4mm + t[7]),
+                    Math.round(t[8]*i_4mm + t[9]*j_4mm + t[10]*k_4mm + t[11])
+                ];
+
+                nv1.scene.crosshairPos = [i, j, k];
+                console.log(i)
+                console.log(j)
+                console.log(k)
+
+                nv1.onLocationChange = function(e) { console.log(e) }
                 nv1.addVolume(nii);
-                console.log(volume);
+                nv1.scene.crosshairPos = nv1.vox2frac([i, j, k]);
+                nv1.drawScene();
+
+                console.log('Background volume dims:', nv1.volumes[0].hdr.dims);
+                console.log('Your volume dims:', nv1.volumes[1].hdr.dims);
+                console.log('Background pixdims:', nv1.volumes[0].hdr.pixDims);
+                console.log('Your volume pixdims:', nv1.volumes[1].hdr.pixDims);
+
+                nv1.createOnLocationChange();
+                // nv1.scene.crosshairPos = [23, 27, 23];
+
+
+                document.getElementById("alphaSlider").value = 0.1 * 255;
             } catch (error) {
                 console.error('Error processing volume:', error);
             }
@@ -313,8 +326,9 @@ async function run() {
     mniDiv.id = "mni";
     mniDiv.textContent = "MNI";
 
-    toggleContainer.appendChild(fsaverageDiv);
     toggleContainer.appendChild(mniDiv);
+    toggleContainer.appendChild(fsaverageDiv);
+
     document.body.appendChild(toggleContainer);
 
     const parent = document.getElementsByName("w2figure0")[0];
@@ -329,12 +343,15 @@ async function run() {
     }];
 
     const nv1 = new Niivue({
+        backColor: [0.075, 0.075, 0.078, 1],
+        backgroundColor: [0.075, 0.075, 0.078, 1],
         show3Dcrosshair: true,
         dragAndDropEnabled: true,
         onLocationChange: (data) => {
             document.getElementById("intensity").innerHTML = "&nbsp;&nbsp;" + data.string;
         }
     });
+    nv1.isAlphaClipDark = true;
 
     // Configure Niivue options
     Object.assign(nv1.opts, {
@@ -380,47 +397,45 @@ async function run() {
     dataOptsVol.id = "dataopts-vol";
     document.body.appendChild(dataOptsVol);
 
-    // Toggle functionality with requestAnimationFrame for smoother transitions
+    function switchToView(viewId) {
+        if (viewId === "mni") {
+            const div1 = document.getElementsByName("w2figure0")[0].children[0];
+            div1.classList.remove("visible");
+            div1.classList.add("hidden");
+            canvas.classList.remove("hidden");
+            canvas.classList.add("visible");
+            dataOptsVol.style.display = "flex";
+            alphaSlider.style.display = "flex";
+
+            requestAnimationFrame(() => {
+                nv1.canvas.width = nv1.canvas.offsetWidth * nv1.uiData.dpr;
+                nv1.canvas.height = nv1.canvas.offsetHeight * nv1.uiData.dpr;
+                nv1.gl.viewport(0, 0, nv1.gl.canvas.width, nv1.gl.canvas.height);
+                nv1.drawScene();
+            });
+        } else {
+            canvas.classList.remove("visible");
+            canvas.classList.add("hidden");
+            dataOptsVol.style.display = "none";
+            alphaSlider.style.display = "none";
+            const div2 = document.getElementsByName("w2figure0")[0].children[0];
+            div2.classList.remove("hidden");
+            div2.classList.add("visible");
+        }
+    }
+
     const toggleOptions = document.querySelectorAll('.toggle-option');
     toggleOptions.forEach(option => {
         option.addEventListener('click', () => {
             toggleOptions.forEach(opt => opt.classList.remove('active'));
             option.classList.add('active');
-
             requestAnimationFrame(() => {
-                if (option.id === "mni") {
-                    const div1 = document.getElementsByName("w2figure0")[0].children[0];
-                    div1.classList.remove("visible");
-                    div1.classList.add("hidden");
-
-                    canvas.classList.remove("hidden");
-                    canvas.classList.add("visible");
-
-                    dataOptsVol.style.display = "flex";
-                    alphaSlider.style.display = "flex";
-
-                    // Force reflow for Niivue
-                    requestAnimationFrame(() => {
-                        nv1.canvas.width = nv1.canvas.offsetWidth * nv1.uiData.dpr;
-                        nv1.canvas.height = nv1.canvas.offsetHeight * nv1.uiData.dpr;
-                        nv1.gl.viewport(0, 0, nv1.gl.canvas.width, nv1.gl.canvas.height);
-                        nv1.drawScene();
-                    });
-                } else {
-                    canvas.classList.remove("visible");
-                    canvas.classList.add("hidden");
-                    dataOptsVol.style.display = "none";
-                    alphaSlider.style.display = "none";
-
-                    const div2 = document.getElementsByName("w2figure0")[0].children[0];
-                    div2.classList.remove("hidden");
-                    div2.classList.add("visible");
-                }
+                switchToView(option.id);
             });
         });
     });
 
-    // Optimized loading indicator handler
+    // Loading indicator handler
     async function waitForDivToHide(divId) {
         const div = document.getElementById(divId);
         if (!div) return Promise.resolve();
@@ -452,6 +467,11 @@ async function run() {
             if (loader) {
                 loader.style.display = "none";
             }
+            // Set mni as activen
+            const mniOption = document.getElementById('mni');
+            toggleOptions.forEach(opt => opt.classList.remove('active'));
+            mniOption.classList.add('active');
+            switchToView("mni");
         }, 500); // Reduced from 1000ms
     });
 }
