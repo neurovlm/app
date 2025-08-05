@@ -8,60 +8,27 @@ use axum::{
 use serde::{Deserialize, Serialize};
 use std::{net::SocketAddr, sync::Arc, time::Instant};
 use tokio::task;
-use candle_transformers::models::bert::{BertModel};
-use tokenizers::{Tokenizer};
 use ndarray::{Array1, Array2};
 use candle_core::Tensor;
-use neurovlm::forward::{load_constants, text_query};
+use neurovlm::forward::{Specter2, GenericModel, load_constants, text_query};
 
 // Define your constants structure
 struct AppConstants {
-    model: BertModel,
-    tokenizer: Tokenizer,
+    text_encoder: Specter2,
+    neuro_decoder: GenericModel,
+    aligner: GenericModel,
     mask: Array1<bool>,
     l_reg_fus: Array2<f32>,
     r_reg_fus: Array2<f32>,
     title_embeddings: Tensor,
-    aligner_w0: Tensor,
-    aligner_b0: Tensor,
-    aligner_w1: Tensor,
-    aligner_b1: Tensor,
-    decoder_w0: Tensor,
-    decoder_b0: Tensor,
-    decoder_w1: Tensor,
-    decoder_b1: Tensor,
-    decoder_w2: Tensor,
-    decoder_b2: Tensor
 }
 
 impl AppConstants {
     fn new() -> Self {
-        println!("Loading constants...");
-        let Ok((
-            model, tokenizer, mask, l_reg_fus, r_reg_fus, title_embeddings,
-            aligner_w0, aligner_b0, aligner_w1, aligner_b1,
-            decoder_w0, decoder_b0, decoder_w1, decoder_b1, decoder_w2, decoder_b2
-        )) = load_constants() else { todo!() };
-
-        println!("Constants loaded successfully");
-
+        let out = load_constants();
+        let (text_encoder, neuro_decoder, aligner, mask, l_reg_fus, r_reg_fus, title_embeddings) = out.unwrap();
         Self {
-            model,
-            tokenizer,
-            mask,
-            l_reg_fus,
-            r_reg_fus,
-            title_embeddings,
-            aligner_w0,
-            aligner_b0,
-            aligner_w1,
-            aligner_b1,
-            decoder_w0,
-            decoder_b0,
-            decoder_w1,
-            decoder_b1,
-            decoder_w2,
-            decoder_b2
+            text_encoder, neuro_decoder, aligner, mask, l_reg_fus, r_reg_fus, title_embeddings
         }
     }
 }
@@ -70,7 +37,6 @@ impl AppConstants {
 struct Query {
     input: String,
 }
-
 #[derive(Serialize)]
 struct Response {
     puborder: Vec<i32>,     // Publication order indices
@@ -78,7 +44,6 @@ struct Response {
     volume: Vec<f32>,       // Changed from Array3<f32> to Vec<f32>
     duration_ms: u128,
 }
-
 // Logging middleware to see all requests
 async fn log_requests(req: Request, next: Next) -> AxumResponse {
     let method = req.method().clone();
@@ -89,13 +54,11 @@ async fn log_requests(req: Request, next: Next) -> AxumResponse {
     println!("Response status: {}", response.status());
     response
 }
-
 // Serve your index.html page (you can expand to serve other static files)
 async fn serve_index() -> Html<&'static str> {
     println!("Serving index page");
     Html(include_str!("../static/index.html"))
 }
-
 async fn handle_query(
     State(constants): State<Arc<AppConstants>>,
     Json(payload): Json<Query>
@@ -112,22 +75,13 @@ async fn handle_query(
         // Pass query and constants
         let (top_inds, surface_vec, img3d) = match text_query(
             &payload.input,
-            &constants.model,
-            &constants.tokenizer,
+            &constants.text_encoder,
+            &constants.neuro_decoder,
+            &constants.aligner,
             &constants.title_embeddings,
             &constants.mask,
             &constants.l_reg_fus,
             &constants.r_reg_fus,
-            &constants.aligner_w0,
-            &constants.aligner_b0,
-            &constants.aligner_w1,
-            &constants.aligner_b1,
-            &constants.decoder_w0,
-            &constants.decoder_b0,
-            &constants.decoder_w1,
-            &constants.decoder_b1,
-            &constants.decoder_w2,
-            &constants.decoder_b2
         ) {
             Ok(vals) => vals,
             Err(e) => panic!("Query failed: {}", e),
@@ -151,7 +105,6 @@ async fn handle_query(
         duration_ms
     })
 }
-
 #[tokio::main]
 async fn main() {
     // Load constants once at startup
@@ -172,3 +125,19 @@ async fn main() {
     let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
     axum::serve(listener, app).await.unwrap();
 }
+
+// fn main() {
+//     // Load constants once at startup
+//     let constants = AppConstants::new();
+
+//     let out = text_query(
+//         "vision",
+//         &constants.text_encoder,
+//         &constants.neuro_decoder,
+//         &constants.aligner,
+//         &constants.title_embeddings,
+//         &constants.mask,
+//         &constants.l_reg_fus,
+//         &constants.r_reg_fus
+//     ).unwrap();
+// }
