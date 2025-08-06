@@ -8,6 +8,7 @@ use axum::{
 use serde::{Deserialize, Serialize};
 use std::{net::SocketAddr, sync::Arc, time::Instant};
 use tokio::task;
+use tokio::fs;
 use ndarray::{Array1, Array2};
 use candle_core::Tensor;
 use neurovlm::forward::{Specter2, GenericModel, load_constants, text_query};
@@ -55,9 +56,13 @@ async fn log_requests(req: Request, next: Next) -> AxumResponse {
     response
 }
 // Serve your index.html page (you can expand to serve other static files)
-async fn serve_index() -> Html<&'static str> {
+async fn serve_index() -> Html<String> {
     println!("Serving index page");
-    Html(include_str!("../static/index.html"))
+    // Html(include_str!("../static/index.html"))
+    let html = fs::read_to_string("static/index.html")
+        .await
+        .unwrap_or_else(|_| "<h1>Failed to load index.html</h1>".to_string());
+    Html(html)
 }
 async fn handle_query(
     State(constants): State<Arc<AppConstants>>,
