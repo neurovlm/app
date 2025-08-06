@@ -1,5 +1,5 @@
 div.jsplot_figure {
-    width: 60%;
+    width: 50%;
     height: 100%;
     background-color: #131314 !important;
 }
@@ -438,7 +438,7 @@ height:58px;
 }
 #figure_ui {
     /* position:absolute; */
-    right: 38%;
+    right: 45%;
     width: 265px !important;
     height: auto !important;
     z-index: 150;

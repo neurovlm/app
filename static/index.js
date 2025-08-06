@@ -102,6 +102,69 @@ function debounce(func, wait) {
     };
 }
 
+// slm
+const responseBox = document.getElementById("response_box");
+const llmDiv = document.createElement("div");
+llmDiv.id = "llm";
+llmDiv.style.height = '40%';
+llmDiv.style.flex = "1";
+llmDiv.style.width = "96%";
+llmDiv.style.display = "flex";
+llmDiv.style.left = "5%";
+llmDiv.style.position = "relative";
+llmDiv.style.fontSize = "16px";
+llmDiv.style.color = "white";
+llmDiv.style.top = "5%";
+llmDiv.style.textAlign = "justify";
+llmDiv.style.overflowY = "auto";
+responseBox.appendChild(llmDiv)
+
+let scrollTop = 0;
+const citationsContainer = document.getElementById("output_container");
+scrollTop = citationsContainer?.scrollTop || 0;
+const div = document.createElement('div');
+const fragment = document.createElement("div");
+fragment.appendChild(div);
+citationsContainer.innerHTML = '';
+fragment.style.height = '50%';
+fragment.style.flex = "1";
+citationsContainer.appendChild(fragment);
+citationsContainer.scrollTop = scrollTop;
+citationsContainer.style.height = '50%';
+
+
+// slm
+async function sendStreamRequest(query) {
+
+    console.log("sending to lm.");
+    const outputDiv = document.getElementById('llm');
+    outputDiv.textContent = ''; // Clear previous output
+
+    const response = await fetch('/llm/stream', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: query })
+    });
+
+    if (!response.ok) {
+        outputDiv.textContent = 'Error: ' + response.statusText;
+        return;
+    }
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder('utf-8');
+
+    while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        const chunk = decoder.decode(value, { stream: true });
+        outputDiv.textContent += chunk;
+    }
+}
+
+
+
+
 async function run() {
     // Pre-load remap data in parallel
     const remapPromise = preloadRemapData();
@@ -114,23 +177,21 @@ async function run() {
     // Scroll through publications after query
     let scrollTop = 0;
     const outputContainer = document.getElementById("output_container");
+    outputContainer.style.height = '100%';
 
     // Create a debounced query handler
     const debouncedQuery = debounce(async function(query) {
         try {
             // Store scroll position
             scrollTop = outputContainer?.scrollTop || 0;
-
             console.log(query);
-            const start = performance.now();
+
             // Autoencoder query
             const response = await fetch('/api/query', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ input: query })
             });
-            const end = performance.now();
-            console.log(`Execution time: ${end - start} milliseconds`);
 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -149,7 +210,7 @@ async function run() {
             const ordered_links = Array.from(pub_order).map(i => links[Math.floor(i)]);
 
             // Use DocumentFragment for better DOM performance
-            const fragment = document.createDocumentFragment();
+            const fragment = document.createElement("div");
             const citationsToShow = ordered_citations.slice(0, 100);
 
             citationsToShow.forEach((item, index) => {
@@ -165,8 +226,11 @@ async function run() {
 
             const citationsContainer = document.getElementById("output_container");
             citationsContainer.innerHTML = '';
+            fragment.style.height = '50%';
+            fragment.style.flex = "1";
             citationsContainer.appendChild(fragment);
             citationsContainer.scrollTop = scrollTop;
+            citationsContainer.style.height = '50%';
 
             // Wait for remap data if not already loaded
             const reinds = await remapPromise;
@@ -262,26 +326,12 @@ async function run() {
                     Math.round(t[4]*i_4mm + t[5]*j_4mm + t[6]*k_4mm + t[7]),
                     Math.round(t[8]*i_4mm + t[9]*j_4mm + t[10]*k_4mm + t[11])
                 ];
-
-                nv1.scene.crosshairPos = [i, j, k];
-                console.log(i)
-                console.log(j)
-                console.log(k)
-
-                nv1.onLocationChange = function(e) { console.log(e) }
+                // nv1.scene.crosshairPos = [i, j, k];
+                // nv1.onLocationChange = function(e) { console.log(e) }
                 nv1.addVolume(nii);
                 nv1.scene.crosshairPos = nv1.vox2frac([i, j, k]);
                 nv1.drawScene();
-
-                console.log('Background volume dims:', nv1.volumes[0].hdr.dims);
-                console.log('Your volume dims:', nv1.volumes[1].hdr.dims);
-                console.log('Background pixdims:', nv1.volumes[0].hdr.pixDims);
-                console.log('Your volume pixdims:', nv1.volumes[1].hdr.pixDims);
-
                 nv1.createOnLocationChange();
-                // nv1.scene.crosshairPos = [23, 27, 23];
-
-
                 document.getElementById("alphaSlider").value = 0.1 * 255;
             } catch (error) {
                 console.error('Error processing volume:', error);
@@ -299,6 +349,7 @@ async function run() {
             const query = this.value.trim();
             this.value = ""; // Clear immediately for better UX
             await debouncedQuery(query);
+            await sendStreamRequest(query);
         }
     });
 
@@ -307,7 +358,7 @@ async function run() {
         waitForElement("#dataname")
     ]);
 
-    // MNI Space setup - create elements more efficiently
+    // MNI Space setup
     const canvas = document.createElement('canvas');
     canvas.id = 'gl1';
     canvas.style.backgroundColor = "#131314";

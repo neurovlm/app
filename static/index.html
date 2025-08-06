@@ -1637,7 +1637,10 @@ self.onmessage = function( event ) {
 <style>
   #rhs {
     height: 100%;
-    width: 40%;
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
     background-color: #131314;
     position: absolute; /* Allows precise positioning */
     right: 0; /* Align to the right edge */
@@ -1646,10 +1649,14 @@ self.onmessage = function( event ) {
 
   /* Query box */
   #query_box {
-    position: absolute;
-    bottom: 20px;
+    flex-direction: column;
+    position: relative;
+    bottom: 0%;
     height: 60px;
     width: 100%;
+    display: flex;
+    margin-top: auto;
+    order: 2;
   }
 
   /* Input container */
@@ -1679,7 +1686,7 @@ self.onmessage = function( event ) {
     color: rgb(227, 227, 227);
     border: 0px;
   }
-  #reponse_box {
+  #response_box {
     position: absolute;
     top: 4%;
     height: 73%;
@@ -1692,7 +1699,7 @@ self.onmessage = function( event ) {
     left: 5%;
     position: relative;
     overflow-y: auto;
-    font-size: 18px;
+    font-size: 15px;
     text-align: left;
     color: white;
     display: flex;
@@ -1746,13 +1753,12 @@ self.onmessage = function( event ) {
   }
 
   #gl1 {
-    /* display: none !important; */
     width: 80% !important;
     height: 80% !important;
-    top: 150px;
-    left: 150px;
+    bottom: 2%;
+    left: 13%;
     position: relative;
-    z-index: 10000;
+    top: 17%;
   }
   #alphaSlider {
     display: none;
@@ -1811,12 +1817,11 @@ self.onmessage = function( event ) {
           </div>
       </div>
       <!-- Response box -->
-      <div id="reponse_box">
+      <div id="response_box">
         <div id="output_container">
         </div>
       </div>
   </div>
-  <!-- <label for="alphaSlider" id="alphaSlider">Threshold</label> -->
   <input
     type="range"
     min="1"
