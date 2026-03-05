@@ -39,7 +39,8 @@ for required in \
     "static/models/specter2_traced.pt" \
     "static/models/decoder_traced.pt" \
     "static/models/aligner_traced.pt" \
-    "static/models/latent_text_specter2_adhoc_query.safetensors"; do
+    "static/models/latent_text_specter2_adhoc_query.safetensors" \
+    "static/models/tokenizer/tokenizer.json"; do
     if [[ ! -f "${REPO_DIR}/${required}" ]]; then
         echo "Missing required file: ${REPO_DIR}/${required}" >&2
         exit 1
