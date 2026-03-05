@@ -169,11 +169,10 @@ pub fn text_query(
     }
 
     let neuro_pred_tch = neuro_decoder.forward(&aligner.forward(&embedding_tch)?)?;
-    let neuro_pred_unormalized = sigmoid(&tch_to_candle(&neuro_pred_tch)?)?;
+    // Traced models now emit batched tensors (e.g. [1, 28542]); normalize using global max.
+    let neuro_pred_unormalized = sigmoid(&tch_to_candle(&neuro_pred_tch)?)?.flatten_all()?;
     let max_val = neuro_pred_unormalized.max(0)?;
-    let neuro_pred = neuro_pred_unormalized
-        .broadcast_div(&max_val)?
-        .flatten_all()?;
+    let neuro_pred = neuro_pred_unormalized.broadcast_div(&max_val)?;
 
     // Place prediction onto volume
     let mut img3d: Array3<f32> = Array3::zeros((46, 55, 46));
