@@ -5,7 +5,7 @@ use std::error::Error;
 use std::io::{Read, Seek};
 
 #[derive(Clone)]
-pub struct Constants{
+pub struct Constants {
     pub mask: Array1<bool>,
     pub r_reg_fus: Array2<f32>,
     pub l_reg_fus: Array2<f32>,
@@ -23,10 +23,9 @@ impl Default for Constants {
 
 impl Constants {
     pub fn new<R: Read + Seek>(mut npz: NpzReader<R>) -> Result<Self, Box<dyn Error>> {
-
-        let mask : Array1<bool> = npz.by_name("MASK")?;
-        let r_reg_fus : Array2<f32> = npz.by_name("R_REG_FUS")?;
-        let l_reg_fus : Array2<f32> = npz.by_name("L_REG_FUS")?;
+        let mask: Array1<bool> = npz.by_name("MASK")?;
+        let r_reg_fus: Array2<f32> = npz.by_name("R_REG_FUS")?;
+        let l_reg_fus: Array2<f32> = npz.by_name("L_REG_FUS")?;
 
         Ok(Constants {
             mask: mask,

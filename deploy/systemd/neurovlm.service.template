@@ -1,0 +1,19 @@
+[Unit]
+Description=NeuroVLM Rust Server
+After=network.target
+
+[Service]
+Type=simple
+User=__RUN_USER__
+Group=__RUN_GROUP__
+WorkingDirectory=__REPO_DIR__
+Environment=LIBTORCH_USE_PYTORCH=1
+Environment=LIBTORCH_BYPASS_VERSION_CHECK=1
+ExecStart=/bin/bash -lc 'TORCH_LIB=$("__REPO_DIR__"/.venv/bin/python -c '"'"'"'"'"'"'"'"'import os, torch; print(os.path.join(os.path.dirname(torch.__file__), "lib"))'"'"'"'"'"'"'"'"') && export LD_LIBRARY_PATH="$TORCH_LIB:${LD_LIBRARY_PATH:-}" && exec "__REPO_DIR__"/target/release/neurovlm'
+Restart=always
+RestartSec=3
+NoNewPrivileges=true
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target

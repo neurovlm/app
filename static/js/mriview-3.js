@@ -354,6 +354,7 @@ var mriview = (function(module) {
         if (this.active.data[0].raw) {
             dims = 3
         }
+        const fixedCmapName = "magma"
 
         function setColorOptionsByDim(dims) {
             if (dims === 1) {
@@ -373,7 +374,16 @@ var mriview = (function(module) {
             }
         }
 
-        setColorOptionsByDim(dims)
+        // fsaverage view uses a fixed colormap to prevent index/cmap drift and UI mismatch.
+        if (window.colormaps && window.colormaps[fixedCmapName]) {
+            setColorOptions({ [fixedCmapName]: window.colormaps[fixedCmapName] })
+            this.active.cmapName = fixedCmapName
+            if (typeof this.active.setColormap === "function") {
+                this.active.setColormap(fixedCmapName)
+            }
+        } else {
+            setColorOptionsByDim(dims)
+        }
 
         // clean numbers for display in colorbar
         function cleanNumber (number, decimals, exponential_if_beyond) {
@@ -402,10 +412,27 @@ var mriview = (function(module) {
 
         var viewer = this
 
-        let imageData = $('#' + this.active.cmapName + ' img')[0].src
+        let cmapName = this.active.cmapName || fixedCmapName
+        let imageNode = $('#' + cmapName + ' img')[0]
+        if (!imageNode) {
+            imageNode = $('#' + fixedCmapName + ' img')[0]
+            cmapName = fixedCmapName
+        }
+        if (!imageNode) {
+            imageNode = $(this.object).find('.cmap img')[0]
+            if (imageNode && imageNode.parentNode && imageNode.parentNode.id) {
+                cmapName = imageNode.parentNode.id
+            }
+        }
 
-        $('#colorlegend-colorbar').attr('src', imageData);
-        $('.colorlegend-select').val(this.active.cmapName).trigger('change');
+        if (imageNode) {
+            $('#colorlegend-colorbar').attr('src', imageNode.src);
+        }
+
+        let selectElement = $('.colorlegend-select')
+        if (selectElement.length > 0 && selectElement.find('option[value="' + cmapName + '"]').length > 0) {
+            selectElement.val(cmapName).trigger('change');
+        }
 
         // displaycolor limits
         if (dims === 1) {
@@ -434,11 +461,14 @@ var mriview = (function(module) {
 
         $('.colorlegend-select').off('select2:select')
         $('.colorlegend-select').on('select2:select', function (e) {
-            var cmapName = e.params.data.id;
+            // Keep fsaverage fixed to magma.
+            var cmapName = fixedCmapName;
             viewer.active.cmapName = cmapName;
             viewer.active.setColormap(cmapName);
             viewer.schedule();
-            $('#colorlegend-colorbar').attr('src', colormaps[cmapName].image.currentSrc);
+            if (colormaps[cmapName] && colormaps[cmapName].image) {
+                $('#colorlegend-colorbar').attr('src', colormaps[cmapName].image.currentSrc);
+            }
         });
 
         function submitVmin(newVal, dim, textId, decimals) {

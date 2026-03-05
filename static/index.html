@@ -1452,6 +1452,8 @@ self.onmessage = function( event ) {
     <div class="cmap" id="RdYlBu_r" style="display:none;"><img src="/static/cmaps/RdYlBu_r.png"/></div>
     <div class="cmap" id="RdYlGn" style="display:none;"><img src="/static/cmaps/RdYlGn.png"/></div>
     <div class="cmap" id="RdYlGn_r" style="display:none;"><img src="/static/cmaps/RdYlGn_r.png"/></div>
+    <div class="cmap" id="magma" style="display:none;"><img src="/static/cmaps/magma.png"/></div>
+    <div class="cmap" id="magma_r" style="display:none;"><img src="/static/cmaps/magma_r.png"/></div>
     <!-- <div class="cmap" id="Reds" style="display:none;"><img src="/static/cmaps/Reds.png"/></div>
     <div class="cmap" id="Reds_cov" style="display:none;"><img src="/static/cmaps/Reds_cov.png"/></div>
     <div class="cmap" id="Reds_r" style="display:none;"><img src="/static/cmaps/Reds_r.png"/></div>
@@ -1625,159 +1627,665 @@ self.onmessage = function( event ) {
       //         viewer.addData(dataviews);
       //     })
       //     .catch(error => console.error('Error loading JSON:', error));
+      const initialSurface = new Float32Array(327684).fill(0.33);
       dataviews = dataset.fromJSON({
-         "views": [{ "data": ["__e506186d71676e98"], "state": null, "attrs": { "priority": 1 }, "desc": "", "cmap": ["RdBu_r"], "vmin": [0.0], "vmax": [1.0], "name": "neurovlm" }],
+         "views": [{ "data": ["__e506186d71676e98"], "state": null, "attrs": { "priority": 1 }, "desc": "", "cmap": ["magma"], "vmin": [0.0], "vmax": [1.0], "name": "neurovlm" }],
          "data": { "__e506186d71676e98": { "split": 163842, "frames": 1, "name": "__e506186d71676e98", "subject": "fsaverage", "min": 0.0, "max": 1.0, "raw": false } },
-         "images": { "__e506186d71676e98": ["/static/data/__e506186d71676e98_0.png"] }
+         "images": { "__e506186d71676e98": [initialSurface] }
         });
       viewer.addData(dataviews);
 	}});
 </script>
 
 <style>
-  #rhs {
-    height: 100%;
-    width: 50%;
-    display: flex;
-    flex-direction: column;
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  :root {
+    --bg: #131314;
+    --panel: #131314;
+    --panel-border: rgba(255, 255, 255, 0.14);
+    --accent: #efefef;
+    --accent-2: #ffffff;
+    --text: #f1f1f1;
+    --muted: #babdc4;
+    --danger: #ff8a8a;
+    --shadow: 0 20px 42px rgba(0, 0, 0, 0.38);
+    --rhs-width: min(38vw, 560px);
+    --site-max-width: 1560px;
+    --site-gutter: clamp(10px, 1.8vw, 28px);
+    --site-content-width: min(calc(100vw - (var(--site-gutter) * 2)), var(--site-max-width));
+    --brain-max-width: 980px;
+    --brain-width: min(var(--brain-max-width), calc(var(--site-content-width) - var(--rhs-width)));
+    --layout-total-width: calc(var(--brain-width) + var(--rhs-width));
+    --layout-left: calc((100vw - var(--layout-total-width)) / 2);
+    --site-inset: calc((100vw - var(--site-content-width)) / 2);
+    --controls-left: max(1rem, calc(var(--layout-left) + 0.6rem));
+    --viewport-height: 100dvh;
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --mobile-plot-height: 46vh;
+  }
+
+  html,
+  body {
+    margin: 0;
+    height: var(--viewport-height);
+    background: var(--bg);
+  }
+
+  body {
     overflow: hidden;
-    background-color: #131314;
-    position: absolute; /* Allows precise positioning */
-    right: 0; /* Align to the right edge */
-    top: 0; /* Optional: Align to the top edge */
+    font-family: "Space Grotesk", "Helvetica Neue", sans-serif;
+    color: var(--text);
   }
 
-  /* Query box */
-  #query_box {
-    flex-direction: column;
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: var(--layout-left);
+    width: var(--layout-total-width);
+    border-left: 1px solid rgba(255, 255, 255, 0.08);
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: -22px 0 34px rgba(0, 0, 0, 0.34);
+    pointer-events: none;
+    z-index: 25;
+  }
+
+  #main,
+  .jsplot_figure,
+  .jsplot_axes,
+  .jsplot_figure > table,
+  .jsplot_figure > table > tr,
+  .jsplot_figure > table > tr > td,
+  canvas#brain {
+    background: var(--bg) !important;
+    background-color: var(--bg) !important;
+  }
+
+  .w2ui-layout,
+  .w2ui-layout > div,
+  .w2ui-layout > div .w2ui-panel,
+  .w2ui-layout > div .w2ui-panel .w2ui-panel-content {
+    background: var(--bg) !important;
+  }
+
+  #main {
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    margin: 0 !important;
     position: relative;
-    bottom: 0%;
-    height: 60px;
+  }
+
+  #dataopts {
+    display: none !important;
+  }
+
+  .plot-host {
+    position: fixed !important;
+    left: var(--layout-left);
+    top: 0;
+    bottom: 0;
+    right: calc(100vw - var(--layout-left) - var(--brain-width)) !important;
+    width: unset !important;
+    max-width: unset !important;
+    min-width: 0;
+    background: var(--bg);
+    overflow: hidden;
+    contain: layout paint size;
+    isolation: isolate;
+    z-index: 30;
+  }
+
+  div.jsplot_figure.plot-host {
+    width: unset !important;
+    right: calc(100vw - var(--layout-left) - var(--brain-width)) !important;
+  }
+
+  #splitter {
+    position: fixed;
+    z-index: 160;
+    top: 0;
+    bottom: 0;
+    left: calc(var(--layout-left) + var(--brain-width) - 6px);
+    width: 12px;
+    cursor: col-resize;
+    background: linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0),
+      rgba(255, 255, 255, 0.08),
+      rgba(255, 255, 255, 0)
+    );
+    transition: background-color 0.15s ease;
+  }
+
+  #splitter:hover,
+  body.is-resizing #splitter {
+    background: linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0),
+      rgba(255, 255, 255, 0.2),
+      rgba(255, 255, 255, 0)
+    );
+  }
+
+  .plot-host > * {
+    position: absolute !important;
+    inset: 0;
+  }
+
+  .plot-host .w2ui-layout,
+  .plot-host .w2ui-panel,
+  .plot-host .w2ui-panel-content,
+  .plot-host .jsplot_axes,
+  .plot-host #main,
+  .plot-host #brain {
+    width: 100% !important;
+    height: 100% !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    overflow: hidden !important;
+  }
+
+  .plot-host [id^="layout_w2figure0_panel_"]:not(#layout_w2figure0_panel_main),
+  .plot-host [id^="layout_w2figure0_resizer_"] {
+    display: none !important;
+  }
+
+  #layout_w2figure0_panel_main {
+    left: 0 !important;
+    top: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  .surface-view,
+  #gl1 {
+    width: 100% !important;
+    height: 100% !important;
+    inset: 0 !important;
+    top: 0 !important;
+    left: 0 !important;
+    transform: none !important;
+    background: var(--bg) !important;
+  }
+
+  .surface-view .w2ui-layout,
+  .surface-view .w2ui-layout > div,
+  .surface-view .w2ui-layout > div .w2ui-panel,
+  .surface-view .w2ui-layout > div .w2ui-panel .w2ui-panel-content,
+  .surface-view #main {
+    width: 100% !important;
+    height: 100% !important;
+    background: var(--bg) !important;
+  }
+
+  #brain {
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  #rhs {
+    position: fixed;
+    top: 0;
+    right: var(--layout-left);
+    z-index: 120;
+    width: var(--rhs-width);
+    height: var(--viewport-height);
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    overflow: hidden;
+    border-left: 1px solid var(--panel-border);
+    background: var(--panel);
+    box-shadow: var(--shadow);
+  }
+
+  #rhs::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.18);
+    pointer-events: none;
+  }
+
+  .panel-header {
+    padding: 1.25rem 1.5rem 0.4rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .panel-header .eyebrow {
+    margin: 0;
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-family: "IBM Plex Mono", monospace;
+  }
+
+  .panel-header h1 {
+    margin: 0.35rem 0 0.25rem;
+    font-size: clamp(1.35rem, 1.1rem + 0.95vw, 2rem);
+    letter-spacing: 0.02em;
+  }
+
+  .panel-header .subtitle {
+    margin: 0 0 0.95rem;
+    font-size: 0.92rem;
+    color: var(--muted);
+    line-height: 1.45;
+    max-width: 52ch;
+  }
+
+  #response_box {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+    padding: 0.75rem 1rem 0.4rem;
+  }
+
+  #query_status {
+    min-height: 1.3rem;
+    margin: 0 0 0.7rem;
+    font-size: 0.78rem;
+    color: var(--muted);
+    font-family: "IBM Plex Mono", monospace;
+    letter-spacing: 0.02em;
+  }
+
+  #output_container {
+    height: auto;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    text-align: left;
+    color: var(--text);
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    padding: 0 0.25rem 0 0;
+    scrollbar-width: thin;
+  }
+
+  .citation-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.62rem;
+    font-size: 0.9rem;
+    line-height: 1.45;
+    padding: 0.42rem 0.45rem;
+    border-radius: 0.55rem;
+    transition: background-color 0.16s ease;
+  }
+
+  .citation-item:hover {
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  .citation-index {
+    display: inline-flex;
+    align-items: center;
+    flex: 0 0 auto;
+    min-width: 2.6rem;
+    color: var(--accent);
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.77rem;
+    letter-spacing: 0.03em;
+    line-height: 1.45;
+    white-space: nowrap;
+  }
+
+  .citation-item a,
+  .citation-item span {
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  .citation-item a:hover {
+    color: var(--accent-2);
+  }
+
+  .citation-item a:visited {
+    color: var(--text);
+  }
+
+  .citation-item a,
+  .citation-item span {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  #query_box {
+    padding: 0.85rem 1rem 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    background: var(--bg);
+  }
+
+  .input-container {
     width: 100%;
     display: flex;
-    margin-top: auto;
-    order: 2;
+    align-items: flex-end;
+    gap: 0.7rem;
+    padding: 0.78rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 0.95rem;
+    background: var(--bg);
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.24);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
   }
 
-  /* Input container */
-  .input-container {
-    position: relative;
-    bottom: 75%;
-    left: 5%;
-    width: 90%;
-    padding: 10px;
-    background-color: rgb(30, 31, 32);
-    border: 2px solid rgb(30, 31, 32);
-    border-radius: 10px;
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-    height: 120%
+  .input-container:focus-within {
+    border-color: rgba(255, 255, 255, 0.35);
+    box-shadow: 0 12px 26px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.14);
   }
 
-  /* Textarea styles */
   .text-input {
-    width: 100%;
-    min-height: 50px;
-    padding: 10px;
-    font-size: 16px;
+    flex: 1;
+    min-height: 2.5rem;
+    max-height: 180px;
+    padding: 0.55rem 0.65rem;
+    font-size: 0.97rem;
+    line-height: 1.35;
     box-sizing: border-box;
     resize: none;
-    overflow: hidden;
-    background-color: rgb(30, 31, 32);
-    color: rgb(227, 227, 227);
-    border: 0px;
-  }
-  #response_box {
-    position: absolute;
-    top: 4%;
-    height: 73%;
-    width: 95%;
-  }
-  #output_container{
-    width: 93%;
-    height: 100%;
-    display: flex;
-    left: 5%;
-    position: relative;
     overflow-y: auto;
-    font-size: 15px;
-    text-align: left;
-    color: white;
-    display: flex;
-    flex-direction: column;
-    gap: 1em;
-    text-indent: -30px;
-    padding-left: 30px;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--text);
+    font-family: "Space Grotesk", "Helvetica Neue", sans-serif;
   }
-  .article a {
-    text-decoration: none; /* Optional: Removes underline from links */
-    color: blue; /* Optional: Styles the links */
+
+  .text-input::placeholder {
+    color: #8f949d;
+  }
+
+  .text-input:disabled {
+    background: var(--bg);
+    color: var(--text);
+    -webkit-text-fill-color: var(--text);
+    opacity: 1;
+  }
+
+  #query_submit {
+    border: 1px solid rgba(255, 255, 255, 0.24);
+    border-radius: 0.75rem;
+    padding: 0.62rem 0.95rem;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 500;
+    color: var(--text);
+    cursor: pointer;
+    background: var(--bg);
+    transition: transform 0.16s ease, filter 0.16s ease;
+    white-space: nowrap;
+  }
+
+  #query_submit:hover:not(:disabled) {
+    transform: translateY(-1px);
+    filter: brightness(1.06);
+  }
+
+  #query_submit:disabled {
+    cursor: not-allowed;
+    filter: none;
+    opacity: 1;
+    color: #a9adb5;
+    border-color: rgba(255, 255, 255, 0.12);
+    background: var(--bg);
+  }
+
+  #query_submit:focus,
+  #query_submit:focus-visible {
+    outline: none;
+    background: var(--bg);
+  }
+
+  #query_submit:active {
+    background: var(--bg);
   }
 
   .toggle-container {
     display: flex;
-    position: absolute;
+    position: fixed;
     z-index: 200;
-    float: left;
-    width: 200px;
-    top: 35px;
-    left: 280px;
-    border: 2px solid #555;
-    border-radius: 20px;
+    top: 1rem;
+    left: var(--controls-left);
+    width: 220px;
+    border-radius: 999px;
     overflow: hidden;
-    background-color: #222;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    background: var(--bg);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.34);
+    max-width: min(220px, calc(100vw - (var(--site-inset) * 2) - 1.4rem));
   }
 
   .toggle-option {
     flex: 1;
-    padding: 10px 20px;
+    padding: 0.55rem 0.72rem;
     text-align: center;
     cursor: pointer;
-    transition: background-color 0.3s, color 0.3s;
-    color: #ccc;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    color: var(--muted);
+    font-size: 0.8rem;
+    font-family: "IBM Plex Mono", monospace;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
   }
 
   .toggle-option.active {
-    background-color: #007BFF;
-    color: #fff;
+    color: #ffffff;
+    background: var(--bg);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.26);
   }
 
-  .toggle-option:not(.active) {
-    background-color: #333;
-    color: #bbb;
-  }
   .visible {
     display: block !important;
   }
+
   .hidden {
     display: none !important;
   }
 
-  #gl1 {
-    width: 80% !important;
-    height: 80% !important;
-    bottom: 2%;
-    left: 13%;
-    position: relative;
-    top: 17%;
-  }
   #alphaSlider {
     display: none;
-    position: absolute;
-    z-index: 200;
-    float: left;
-    width: 200px;
-    top: 35px;
-    left: 500px;
+    position: fixed;
+    z-index: 210;
+    top: 3.1rem;
+    left: var(--controls-left);
+    width: min(220px, calc(100vw - (var(--site-inset) * 2) - 1.4rem));
   }
-  #dataopts-vol{
+
+  #dataopts-vol {
+    display: none !important;
+  }
+
+  #figure_ui {
+    display: none !important;
+  }
+
+  .dg,
+  .dg.main,
+  .dg.ac {
+    display: none !important;
+  }
+
+  body.view-fsaverage #colorlegend-colors .colorlegend-select,
+  body.view-fsaverage #colorlegend-colors .select2-container {
+    display: none !important;
+  }
+
+  body.view-fsaverage #colorlegend-colorbar {
+    pointer-events: none;
+    cursor: default;
+  }
+
+  .abstract-tooltip {
+    position: fixed;
+    z-index: 310;
+    max-width: min(560px, 92vw);
+    padding: 0.7rem 0.82rem;
+    border-radius: 0.78rem;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    background: rgba(19, 19, 20, 0.97);
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.42);
+    pointer-events: none;
+  }
+
+  .abstract-tooltip.hidden {
+    display: none;
+  }
+
+  .abstract-tooltip .abstract-title {
+    font-size: 0.77rem;
+    color: #d6d8dd;
+    margin-bottom: 0.35rem;
+    line-height: 1.35;
+  }
+
+  .abstract-tooltip .abstract-text {
+    font-size: 0.83rem;
+    color: #f1f1f1;
+    line-height: 1.42;
+    white-space: pre-wrap;
+  }
+
+  #loader .loader-label {
     position: absolute;
-    z-index: 8;
-    float: left;
-    padding: 15px;
-    margin: 20px;
-    border-radius: 10px;
-    background: rgba(255, 255, 255, .2);
-    max-width: 400px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, calc(90px - 50%));
+    color: #d5e7ff;
+    font-size: 1.08rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-family: "IBM Plex Mono", monospace;
+  }
+
+  @media (max-width: 1240px) {
+    :root {
+      --rhs-width: min(44vw, 560px);
+    }
+    #rhs {
+      width: var(--rhs-width);
+    }
+  }
+
+  @media (max-width: 980px) {
+    :root {
+      --mobile-plot-height: min(52dvh, 420px);
+      --site-gutter: 0px;
+      --site-inset: 0px;
+      --brain-width: 100vw;
+      --layout-total-width: 100vw;
+      --layout-left: 0px;
+      --controls-left: 0.72rem;
+    }
+
+    body::before {
+      display: none;
+    }
+
+    .plot-host {
+      left: 0;
+      right: 0 !important;
+      top: var(--safe-top);
+      bottom: auto;
+      width: unset !important;
+      max-width: unset !important;
+      height: var(--mobile-plot-height);
+      border-bottom: 1px solid var(--panel-border);
+    }
+
+    #rhs {
+      left: 0;
+      width: 100vw;
+      top: calc(var(--safe-top) + var(--mobile-plot-height));
+      bottom: 0;
+      height: calc(var(--viewport-height) - var(--safe-top) - var(--mobile-plot-height));
+      right: 0;
+      border-left: none;
+      border-top: 1px solid var(--panel-border);
+      padding-bottom: var(--safe-bottom);
+    }
+
+    #splitter {
+      display: none !important;
+    }
+
+    .panel-header {
+      padding: 0.72rem 0.92rem 0.3rem;
+    }
+
+    .panel-header .subtitle {
+      display: none;
+    }
+
+    #response_box {
+      padding: 0.5rem 0.82rem 0.25rem;
+    }
+
+    #query_status {
+      margin-bottom: 0.5rem;
+    }
+
+    #query_box {
+      position: sticky;
+      bottom: 0;
+      z-index: 240;
+      padding: 0.64rem 0.82rem 0.82rem;
+    }
+
+    .toggle-container {
+      top: calc(var(--safe-top) + 0.55rem);
+      left: 0.72rem;
+      width: 200px;
+    }
+
+    #alphaSlider {
+      top: calc(var(--safe-top) + 2.85rem);
+      left: 0.72rem;
+      width: 200px;
+    }
+
+    .abstract-tooltip {
+      max-width: 94vw;
+    }
+  }
+
+  @media (max-width: 560px) {
+    :root {
+      --mobile-plot-height: min(50dvh, 360px);
+    }
+
+    .panel-header h1 {
+      font-size: 1.22rem;
+    }
+
+    .toggle-container {
+      width: 176px;
+    }
+
+    #alphaSlider {
+      width: 176px;
+    }
+
   }
 </style>
 </head>
@@ -1792,34 +2300,23 @@ self.onmessage = function( event ) {
       <div class="dot"></div>
       <div class="dot"></div>
     </figure>
-    <div style="
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, calc(80px - 50%));
-      color: rgb(227, 227, 227);
-      font-size: 24px;
-      font-weight: bold;
-      text-align: center;
-      padding: 20px;
-    ">
-    Loading
+    <div class="loader-label">Loading NeuroVLM</div>
   </div>
-  </div>
-  <!-- Right-hand side container -->
   <div id="rhs">
-      <!-- Query box -->
-      <div id="query_box">
-          <!-- Input container -->
-          <div class="input-container">
-              <!-- Textarea -->
-              <textarea class="text-input" id="txid">Ask</textarea>
-          </div>
+      <div class="panel-header">
+          <p class="eyebrow">Interactive Neuroimaging Explorer</p>
+          <h1>NeuroVLM</h1>
+          <!-- <p class="subtitle">Enter a concept and inspect predicted cortical activity plus ranked supporting publications.</p> -->
       </div>
-      <!-- Response box -->
       <div id="response_box">
-        <div id="output_container">
-        </div>
+        <div id="query_status">Ready.</div>
+        <div id="output_container"></div>
+      </div>
+      <div id="query_box">
+          <div class="input-container">
+              <textarea class="text-input" id="txid" rows="1" placeholder="Query neuroimaging papers"></textarea>
+              <button id="query_submit" type="button">Run Query</button>
+          </div>
       </div>
   </div>
   <input
@@ -1837,30 +2334,6 @@ self.onmessage = function( event ) {
     <option value="4">Render</option>
     <option value="3" selected>A+C+S+R</option>
   </select>
-
-  <script>
-      // Automatically resize the textarea based on its content
-      const textarea = document.getElementById("txid");
-      textarea.addEventListener('input', function () {
-          this.style.height = 'auto'; // Reset height to allow shrinking
-          this.style.height = this.scrollHeight + 'px'; // Adjust height based on content
-      });
-
-      // Add event listener to clear default text on focus
-      textarea.addEventListener('focus', function () {
-          if (this.value === "Ask") {
-              this.value = ""; // Clear the default text
-          }
-      });
-
-      // Add event listener to set back default text if textarea is empty on blur
-      textarea.addEventListener('blur', function () {
-          if (this.value.trim() === "") {
-              this.value = "Ask"; // Reset to default text
-          }
-      });
-  </script>
-
-
+  <div id="abstract_tooltip" class="abstract-tooltip hidden" role="tooltip" aria-hidden="true"></div>
 </body>
 <footer id="intensity" style="display: none;">&nbsp;</footer>

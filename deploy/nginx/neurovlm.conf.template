@@ -1,0 +1,74 @@
+server {
+    server_name __SERVER_NAME__;
+
+    location /.well-known/acme-challenge/ {
+        root /var/www/html;
+    }
+
+    location /llm/ {
+        proxy_pass http://127.0.0.1:__LLM_PORT__;
+        proxy_http_version 1.1;
+        proxy_buffering off;
+        proxy_cache off;
+        proxy_set_header Connection '';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+
+    location /static/ {
+        alias __REPO_DIR__/static/;
+        try_files $uri $uri/ =404;
+    }
+
+    location /api/ {
+        proxy_pass http://127.0.0.1:__RUST_PORT__;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+
+    location / {
+        proxy_pass http://127.0.0.1:__RUST_PORT__;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+
+    location /graphs/ {
+        alias __REPO_DIR__/graphs/;
+        try_files $uri $uri/ =404;
+    }
+
+    location /study/ {
+        proxy_pass http://127.0.0.1:__STUDY_PORT__/;
+        proxy_redirect off;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Prefix /study;
+        proxy_set_header X-Forwarded-Proto https;
+    }
+
+    location /study/static/ {
+        alias __REPO_DIR__/study/static/;
+        expires 30d;
+        add_header Cache-Control "public, immutable";
+    }
+
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/__SERVER_NAME__/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/__SERVER_NAME__/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+}
+
+server {
+    if ($host = __SERVER_NAME__) {
+        return 301 https://$host$request_uri;
+    }
+
+    listen 80;
+    server_name __SERVER_NAME__;
+    return 404;
+}

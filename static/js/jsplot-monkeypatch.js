@@ -626,10 +626,10 @@ module.Axes3D.prototype.getImage = function(width, height, post) {
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(width, height);
-    this.renderer.setClearColor(new THREE.Color(0,0,0), 0);
+    this.renderer.setClearColor(new THREE.Color("#131314"), 1);
     this.renderer.render(this.views[0].scene, this.camera, renderbuf);
     this.renderer.setSize(oldw, oldh);
-    this.renderer.setClearColor(new THREE.Color(0,0,0), 1);
+    this.renderer.setClearColor(clearColor, clearAlpha);
     this.camera.aspect = oldw / oldh;
     this.camera.updateProjectionMatrix();
 

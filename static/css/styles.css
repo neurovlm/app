@@ -1,11 +1,11 @@
 div.jsplot_figure {
     width: 50%;
-    height: 100%;
+    /* height: 100%; */
     background-color: #131314 !important;
 }
 .jsplot_figure>table {
     width: 55%;
-    height: 100%;
+    /* height: 100%; */
 }
 .jsplot_figure>table>tr,
 .jsplot_figure>table>tr>td {
