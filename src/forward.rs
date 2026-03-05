@@ -18,8 +18,10 @@ fn tch_to_candle(t: &Tensor) -> anyhow::Result<CandleTensor> {
     // Convert shape from Vec<i64> to Vec<usize>
     let shape: Vec<usize> = t.size().into_iter().map(|x| x as usize).collect();
 
-    // Extract data (requires owned Tensor, hence .shallow_clone())
-    let data: Vec<f32> = Vec::<f32>::try_from(t)?;
+    // Extract data as a flat contiguous vec, then rebuild with original shape.
+    // tch only converts tensors to Vec directly when they are 1D.
+    let flat = t.f_contiguous()?.f_view([-1])?;
+    let data: Vec<f32> = Vec::<f32>::try_from(&flat)?;
 
     // Create Candle tensor
     let candle = CandleTensor::from_vec(data, Shape::from(shape), &Device::Cpu)?;
@@ -141,7 +143,7 @@ pub fn text_query(
 ) -> Result<(Vec<i32>, Vec<f32>, Array3<f32>), Box<dyn std::error::Error>> {
     // Compute embedding for the query
     let embedding_tch = specter.encode(query)?;
-    let query_embedding = tch_to_candle(&embedding_tch)?;
+    let query_embedding = tch_to_candle(&embedding_tch)?.flatten_all()?;
     let n_titles = title_embeddings.dim(0)?;
     let query_norm_sq = (&query_embedding * &query_embedding)?
         .sum_all()?
@@ -169,7 +171,9 @@ pub fn text_query(
     let neuro_pred_tch = neuro_decoder.forward(&aligner.forward(&embedding_tch)?)?;
     let neuro_pred_unormalized = sigmoid(&tch_to_candle(&neuro_pred_tch)?)?;
     let max_val = neuro_pred_unormalized.max(0)?;
-    let neuro_pred = neuro_pred_unormalized.broadcast_div(&max_val)?;
+    let neuro_pred = neuro_pred_unormalized
+        .broadcast_div(&max_val)?
+        .flatten_all()?;
 
     // Place prediction onto volume
     let mut img3d: Array3<f32> = Array3::zeros((46, 55, 46));
