@@ -34,6 +34,12 @@ if [[ ! -x "${REPO_DIR}/.venv/bin/python" ]]; then
     echo "Missing virtualenv python at ${REPO_DIR}/.venv/bin/python" >&2
     exit 1
 fi
+if ! "${REPO_DIR}/.venv/bin/python" -c "import torch" >/dev/null 2>&1; then
+    echo "Missing Python package 'torch' in ${REPO_DIR}/.venv" >&2
+    echo "Install it with:" >&2
+    echo "  ${REPO_DIR}/.venv/bin/pip install --index-url https://download.pytorch.org/whl/cpu torch" >&2
+    exit 1
+fi
 
 for required in \
     "static/models/specter2_traced.pt" \
@@ -59,7 +65,11 @@ fi
 echo "Building release binary..."
 (
     cd "${REPO_DIR}"
-    LIBTORCH_USE_PYTORCH=1 LIBTORCH_BYPASS_VERSION_CHECK=1 cargo build --release
+    PATH="${REPO_DIR}/.venv/bin:${PATH}" \
+    PYTHON="${REPO_DIR}/.venv/bin/python" \
+    LIBTORCH_USE_PYTORCH=1 \
+    LIBTORCH_BYPASS_VERSION_CHECK=1 \
+    cargo build --release
 )
 
 TMP_NGINX="$(mktemp)"

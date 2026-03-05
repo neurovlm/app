@@ -105,12 +105,15 @@ async fn handle_query(
     })
     .await
     .map_err(|e| {
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            format!("task join error: {e}"),
-        )
-    })?
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e))?;
+        let msg = format!("task join error: {e}");
+        eprintln!("{msg}");
+        (StatusCode::INTERNAL_SERVER_ERROR, msg)
+    })?;
+
+    let result = result.map_err(|e| {
+        eprintln!("query failed: {e}");
+        (StatusCode::INTERNAL_SERVER_ERROR, e)
+    })?;
 
     let duration_ms = start.elapsed().as_millis();
     println!("Query processed in {}ms", duration_ms);
@@ -129,6 +132,7 @@ async fn main() {
 
     let app = Router::new()
         .route("/", get(serve_index))
+        .route("/favicon.ico", get(|| async { StatusCode::NO_CONTENT }))
         .route("/api/query", post(handle_query))
         .nest_service("/static", ServeDir::new("static"))
         .layer(middleware::from_fn(log_requests))

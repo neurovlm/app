@@ -782,7 +782,7 @@ async function run() {
         const isWide = effectiveWidth >= 430;
         textbox.placeholder = isWide
             ? "Query papers..."
-            : "Query neuroimaging papers...";
+            : "Query papers...";
     }
 
     let splitterDrag = null;
@@ -927,7 +927,11 @@ async function run() {
             });
 
             if (!response.ok) {
-                throw new Error(`HTTP error ${response.status}`);
+                const errorText = (await response.text()).trim();
+                const message = errorText
+                    ? `HTTP error ${response.status}: ${errorText}`
+                    : `HTTP error ${response.status}`;
+                throw new Error(message);
             }
 
             const out = await response.json();
@@ -1085,7 +1089,9 @@ async function run() {
             queryStatus.textContent = `Done in ${duration} ms`;
         } catch (error) {
             console.error("Query processing error:", error);
-            queryStatus.textContent = "Query failed. Check server logs.";
+            queryStatus.textContent = error?.message
+                ? `Query failed: ${error.message}`
+                : "Query failed. Check server logs.";
         } finally {
             isQueryRunning = false;
             submitButton.disabled = false;
